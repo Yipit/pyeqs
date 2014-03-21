@@ -9,9 +9,10 @@ class GeoDistance(dict):
         Geo Distance Filter
 
         Acceptable Input Styles:
-        Geo([40, -70], '10km')
-        Geo({'lat': 40, 'lon': -70}, '10km')
-        Geo({'lat': 40, 'lng': -70}, '10km')
+        GeoDistance({'lat': 40, 'lon': -70}, '10km')
+        GeoDistance({'lat': 40, 'lng': -70}, '10km')
+        GeoDistance([40, -70], '10km')
+        GeoDistance("-70,40", '10km')
         """
         super(GeoDistance, self).__init__()
         self.coordinates = self._parse_coordinates(coordinates)
@@ -39,4 +40,4 @@ class GeoDistance(dict):
             lon = coordinates.values()[0]
         if isinstance(coordinates, (str, unicode)):
             lat, lon = coordinates.split(",")
-        return map(lambda x: float(x), [lat, lon])
+        return map(float, [lat, lon])
