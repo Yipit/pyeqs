@@ -30,8 +30,6 @@ class GeoDistance(dict):
         return geo_distance
 
     def _parse_coordinates(self, coordinates):
-        lat = None
-        lon = None
         if isinstance(coordinates, list):
             lat = coordinates[1]
             lon = coordinates[0]
