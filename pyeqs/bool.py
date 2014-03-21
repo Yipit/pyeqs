@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
 
+
 class Bool(dict):
 
     def __init__(self):
@@ -8,7 +9,7 @@ class Bool(dict):
         self.must = []
         self.must_not = []
         self.should = []
-        self["bool"]= {}
+        self["bool"] = {}
 
     def bool(self, must=None, must_not=None, should=None):
         if must:

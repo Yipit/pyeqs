@@ -5,16 +5,13 @@ from pyelasticsearch import ElasticSearch
 from . import Filter, Bool
 
 
-
 class QuerySet(object):
 
     def __init__(self, host, query=None, index='', ):
-        super(JSONQuery, self).__init__()
         self._host = host
         self._index = index
-        self._query = { "query": {} }
+        self._query = {"query": {}}
         self._query_string = query
-        self._build_query()
         self._query_formed = False
         self._filtered = False
         self._scored = False
@@ -22,6 +19,7 @@ class QuerySet(object):
         self._wrappers = []
         self._count = 0
         self._conn = None
+        self._build_query()
 
     def filter(self, f, operator="and"):
         if self._filtered:
@@ -97,7 +95,6 @@ class QuerySet(object):
     def _build_sorted_query(self):
         self._sorted = True
         self._query["sort"] = []
-
 
     def __getitem__(self, val):
         """

@@ -40,7 +40,7 @@ def test_add_score_with_params():
 
 def test_add_score_with_lang():
     """
-    Create Score Block with Languate
+    Create Score Block with Language
     """
     # When add a Score field
     t = ScriptScore("foo", lang="mvel")
@@ -56,7 +56,7 @@ def test_add_score_with_lang():
 
 def test_add_score_with_params_and_lang():
     """
-    Create Score Block with Params and Lang
+    Create Score Block with Params and Language
     """
     # When add a Score field
     t = ScriptScore("foo", params={"bar": "baz"}, lang="mvel")
