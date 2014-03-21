@@ -21,23 +21,22 @@ class GeoDistance(dict):
     def _build_dict(self):
         geo_distance = {
             "distance": self.distance,
-            "location": {'lat': float(self.coordinates[0]), 'lon': float(self.coordinates[1])}
+            "location": {
+                'lat': self.coordinates[0],
+                'lon': self.coordinates[1]
+            }
         }
         return geo_distance
 
     def _parse_coordinates(self, coordinates):
+        lat = None
+        lon = None
         if isinstance(coordinates, list):
-            return [coordinates[1], coordinates[0]]
+            lat = coordinates[1]
+            lon = coordinates[0]
         if isinstance(coordinates, dict):
-            lat = coordinates.get('lat')
-            if 'lon' in coordinates:
-                lon = coordinates.get('lon')
-            elif 'lng' in coordinates:
-                lon = coordinates.get('lng')
-            else:
-                coordinates.pop('lat')
-                lon = coordinates.values()[0]
-            return [lat, lon]
+            lat = coordinates.pop('lat')
+            lon = coordinates.values()[0]
         if isinstance(coordinates, (str, unicode)):
             lat, lon = coordinates.split(",")
-            return [lat, lon]
+        return map(lambda x: float(x), [lat, lon])
