@@ -374,3 +374,29 @@ def test_create_queryset_with_only_block():
     }
 
     compare(t._query, results)
+
+
+def test_queryset_count():
+    """
+    Get QuerySet Count
+    """
+    # When I create a query block
+    t = QuerySet("http://foobar:9200")
+
+    # Then I get an appropriate Count
+    t.count().should.equal(0)
+
+
+def test_queryset_string():
+    """
+    Create QuerySet with String query
+    """
+    # When I create a query block
+    t = QuerySet("http://foobar:9200", query="foo")
+
+    # Then I see the appropriate JSON
+    results = {
+        "query": {
+            "query_string": {"foo"}
+        }
+    }
