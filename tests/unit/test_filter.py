@@ -23,7 +23,7 @@ def test_create_filter():
 
 def test_add_filter():
     """
-    Create Filter and Add Block
+    Create Filter with Block
     """
     # When I create a filter
     t = Filter()

@@ -6,21 +6,21 @@ class Bool(dict):
 
     def __init__(self):
         super(Bool, self).__init__()
-        self.must = []
-        self.must_not = []
-        self.should = []
+        self._must = []
+        self._must_not = []
+        self._should = []
         self["bool"] = {}
 
     def bool(self, must=None, must_not=None, should=None):
         if must:
-            self.must.append(must)
-            self["bool"]["must"] = self.must
+            self._must.append(must)
+            self["bool"]["must"] = self._must
         if must_not:
-            self.must_not.append(must_not)
-            self["bool"]["must_not"] = self.must_not
+            self._must_not.append(must_not)
+            self["bool"]["must_not"] = self._must_not
         if should:
-            self.should.append(should)
-            self["bool"]["should"] = self.should
+            self._should.append(should)
+            self["bool"]["should"] = self._should
         return self
 
     def must(self, block):
