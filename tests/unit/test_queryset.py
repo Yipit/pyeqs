@@ -52,6 +52,43 @@ def test_create_queryset_with_filter():
     compare(t._query, results)
 
 
+def test_create_queryset_with_filter():
+    """
+    Create QuerySet with Multiple Filters
+    """
+    # When create a query block
+    t = QuerySet("http://foobar:9200")
+
+    # And I add a filter
+    t.filter(Term("foo", "bar"))
+    t.filter(Term("foobar", "foobar"))
+
+    # Then I see the appropriate JSON
+    results = {
+        "query": {
+            "filtered": {
+                "query": {"match_all": {}},
+                "filter": {
+                    "and": [
+                        {
+                            "term": {
+                                "foo": "bar"
+                            }
+                        },
+                        {
+                            "term": {
+                                "foobar": "foobar"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    }
+
+    compare(t._query, results)
+
+
 def test_create_queryset_with_filter_block():
     """
     Create QuerySet with Filter Block
