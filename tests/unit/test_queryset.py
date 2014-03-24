@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from pyeqs import QuerySet, Filter
-from pyeqs.dsl import Term, Sort
+from pyeqs.dsl import Term, Sort, ScriptScore
 from tests.helpers import compare
 
 
@@ -106,6 +106,74 @@ def test_create_queryset_with_sorting():
         ],
         "query": {
             "match_all": {}
+        }
+    }
+
+    compare(t._query, results)
+
+
+def test_create_queryset_with_scoring():
+    """
+    Create QuerySet with Scoring
+    """
+    # When create a query block
+    t = QuerySet("http://foobar:9200")
+
+    # And I add scoring
+    s = ScriptScore("foo = 0.0")
+    t.score(s)
+
+    # Then I see the appropriate JSON
+    results = {
+        "query": {
+            "function_score": {
+                "query": { "match_all": {} },
+                "script_score": {
+                    "script": "foo = 0.0"
+                },
+                "boost_mode": "replace"
+            }
+        }
+    }
+
+    compare(t._query, results)
+
+
+def test_create_queryset_with_scoring_and_filtering():
+    """
+    Create QuerySet with Scoring and Filtering
+    """
+    # When create a query block
+    t = QuerySet("http://foobar:9200")
+
+    # And I add scoring
+    s = ScriptScore("foo = 0.0")
+    t.score(s)
+    t.filter(Term("foo", "bar"))
+
+    # Then I see the appropriate JSON
+    results = {
+        "query": {
+            "function_score": {
+                "query": {
+                    "filtered": {
+                        "query": { "match_all": {} },
+                        "filter": {
+                            "and": [
+                                {
+                                    "term": {
+                                        "foo": "bar"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "script_score": {
+                    "script": "foo = 0.0"
+                },
+                "boost_mode": "replace"
+            }
         }
     }
 
