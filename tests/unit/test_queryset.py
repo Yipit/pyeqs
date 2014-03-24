@@ -355,3 +355,22 @@ def test_create_queryset_with_filters_and_scoring():
     }
 
     compare(t._query, results)
+
+
+def test_create_queryset_with_only_block():
+    """
+    Create QuerySet with Only block
+    """
+    # When create a query block
+    t = QuerySet("http://foobar:9200")
+
+    # And I add an 'only' block
+    t.only("_id")
+
+    # Then I see the appropriate JSON
+    results = {
+        "query": {"match_all": {}},
+        "fields": "_id"
+    }
+
+    compare(t._query, results)
