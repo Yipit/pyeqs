@@ -223,3 +223,54 @@ def test_create_queryset_with_filtering_and_scoring():
     }
 
     compare(t._query, results)
+
+
+def test_create_queryset_with_filters_and_scoring():
+    """
+    Create QuerySet with Scoring and Multiple Filters
+    """
+    # When create a query block
+    t = QuerySet("http://foobar:9200")
+
+    # And I add filtering
+    t.filter(Term("foo", "bar"))
+
+    # And I add scoring
+    s = ScriptScore("foo = 0.0")
+    t.score(s)
+
+    # And I add a second filter
+    t.filter(Term("foobar", "foobar"))
+
+    # Then I see the appropriate JSON
+    results = {
+        "query": {
+            "function_score": {
+                "query": {
+                    "filtered": {
+                        "query": {"match_all": {}},
+                        "filter": {
+                            "and": [
+                                {
+                                    "term": {
+                                        "foo": "bar"
+                                    }
+                                },
+                                {
+                                    "term": {
+                                        "foobar": "foobar"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                "script_score": {
+                    "script": "foo = 0.0"
+                },
+                "boost_mode": "replace"
+            }
+        }
+    }
+
+    compare(t._query, results)
