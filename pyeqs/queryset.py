@@ -71,7 +71,7 @@ class QuerySet(object):
         if self._query_string:
             self._query["query"] = {
                 "query_string": {
-                    "query": self._query["query"]
+                    "query": self._query_string
                 }
             }
         else:

@@ -468,9 +468,13 @@ def test_queryset_string():
     # Then I see the appropriate JSON
     results = {
         "query": {
-            "query_string": {"foo"}
+            "query_string": {
+                "query": "foo"
+            }
         }
     }
+
+    compare(t._query, results)
 
 
 @httpretty.activate
