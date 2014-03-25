@@ -116,11 +116,9 @@ class QuerySet(object):
         start = val.start
         end = val.stop
         results = self._search(start, end)
-        self._count = results.count()
-        items = results.items()
         for wrapper in self._wrappers:
-            items = wrapper(items)
-        return items
+            results = wrapper(results)
+        return results
 
     def _search(self, start, end):
         conn = self._get_connection()
@@ -130,7 +128,7 @@ class QuerySet(object):
         return self._raw_results["hits"]["hits"]
 
     def _get_result_count(self, results):
-        return int(items["hits"]["total"])
+        return int(results["hits"]["total"])
 
     def _get_pagination_kwargs(self, start, end):
         size = end - start

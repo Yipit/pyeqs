@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import httpretty
+import json
+import sure
+
 from pyeqs import QuerySet, Filter
 from pyeqs.dsl import Term, Sort, ScriptScore
 from tests.helpers import compare
@@ -149,6 +153,42 @@ def test_create_queryset_with_sorting():
     compare(t._query, results)
 
 
+def test_create_queryset_with_multiple_sorting():
+    """
+    Create QuerySet with Multiple Sorting
+    """
+    # When create a query block
+    t = QuerySet("http://foobar:9200")
+
+    # And I add sorting
+    s = Sort("_id", order="asc")
+    t.order_by(s)
+
+    ss = Sort("_id", order="desc")
+    t.order_by(ss)
+
+    # Then I see the appropriate JSON
+    results = {
+        "sort": [
+            {
+                "_id": {
+                    "order": "asc"
+                }
+            },
+            {
+                "_id": {
+                    "order": "desc"
+                }
+            }
+        ],
+        "query": {
+            "match_all": {}
+        }
+    }
+
+    compare(t._query, results)
+
+
 def test_create_queryset_with_scoring():
     """
     Create QuerySet with Scoring
@@ -167,6 +207,37 @@ def test_create_queryset_with_scoring():
                 "query": {"match_all": {}},
                 "script_score": {
                     "script": "foo = 0.0"
+                },
+                "boost_mode": "replace"
+            }
+        }
+    }
+
+    compare(t._query, results)
+
+
+def test_create_queryset_with_multiple_scoring():
+    """
+    Create QuerySet with Multiple Scoring
+    """
+    # When create a query block
+    t = QuerySet("http://foobar:9200")
+
+    # And I add scoring
+    s = ScriptScore("foo = 0.0")
+    t.score(s)
+
+    # And I add more scoring
+    ss = ScriptScore("foo = 1.0")
+    t.score(ss)
+
+    # Then I see the appropriate JSON
+    results = {
+        "query": {
+            "function_score": {
+                "query": {"match_all": {}},
+                "script_score": {
+                    "script": "foo = 1.0"
                 },
                 "boost_mode": "replace"
             }
@@ -400,3 +471,129 @@ def test_queryset_string():
             "query_string": {"foo"}
         }
     }
+
+
+@httpretty.activate
+def test_queryset_getitem():
+    """
+    Fetch from QuerySet with __getitem__
+    """
+    # When I create a query block
+    t = QuerySet("http://foobar:9200", index="bar")
+
+    # And I have records
+    response = {
+       "took": 12,
+       "hits": {
+          "total": 1,
+          "max_score": 10,
+          "hits": [
+             {
+                "_index": "bar",
+                "_type": "baz",
+                "_id": "1",
+                "_score": 10,
+                "_source": {
+                   "foo": "bar"
+                },
+                "sort": [
+                   1395687078000
+                ]
+             }
+          ]
+       }
+    }
+    httpretty.register_uri(httpretty.GET, "http://foobar:9200/bar/_search",
+                       body=json.dumps(response),
+                       content_type="application/json")
+
+    results = t[0:1]
+    len(results).should.equal(1)
+    t.count().should.equal(1)
+
+
+@httpretty.activate
+def test_queryset_getitem_with_wrapper():
+    """
+    Fetch from QuerySet with __getitem__ and wrapper
+    """
+    # When I create a query block
+    t = QuerySet("http://foobar:9200", index="bar")
+    wrapper = lambda y: map(lambda x: x['_id'], y)
+    t.wrappers(wrapper)
+
+    # And I have records
+    response = {
+       "took": 12,
+       "hits": {
+          "total": 1,
+          "max_score": 10,
+          "hits": [
+             {
+                "_index": "bar",
+                "_type": "baz",
+                "_id": "1",
+                "_score": 10,
+                "_source": {
+                   "foo": "bar"
+                },
+                "sort": [
+                   1395687078000
+                ]
+             }
+          ]
+       }
+    }
+    httpretty.register_uri(httpretty.GET, "http://foobar:9200/bar/_search",
+                       body=json.dumps(response),
+                       content_type="application/json")
+
+    results = t[0:1]
+    len(results).should.equal(1)
+    t.count().should.equal(1)
+    int(results[0]).should.equal(1)
+
+
+@httpretty.activate
+def test_queryset_getitem_multiple():
+    """
+    Fetch from QuerySet with __getitem__ multiple times
+    """
+    # When I create a query block
+    t = QuerySet("http://foobar:9200", index="bar")
+    wrapper = lambda y: map(lambda x: x['_id'], y)
+    t.wrappers(wrapper)
+
+    # And I have a record
+    response = {
+       "took": 12,
+       "hits": {
+          "total": 1,
+          "max_score": 10,
+          "hits": [
+             {
+                "_index": "bar",
+                "_type": "baz",
+                "_id": "1",
+                "_score": 10,
+                "_source": {
+                   "foo": "bar"
+                },
+                "sort": [
+                   1395687078000
+                ]
+             }
+          ]
+       }
+    }
+    httpretty.register_uri(httpretty.GET, "http://foobar:9200/bar/_search",
+                       body=json.dumps(response),
+                       content_type="application/json")
+
+    results = t[0:1]
+    len(results).should.equal(1)
+    t.count().should.equal(1)
+
+    results = t[0:1]
+    len(results).should.equal(1)
+    t.count().should.equal(1)
