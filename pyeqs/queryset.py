@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
 
-import copy
+from copy import deepcopy
 
 from pyelasticsearch import ElasticSearch
 from . import Filter, Bool
@@ -32,15 +32,13 @@ class QuerySet(object):
         else:
             self._build_filtered_query()
             if isinstance(f, Filter):
-                if self._scored:
-                    self._query["query"]["function_score"]["query"]["filtered"]["filter"] = f
-                else:
-                    self._query["query"]["filtered"]["filter"] = f
+                filter_object = f
             else:
-                if self._scored:
-                    self._query["query"]["function_score"]["query"]["filtered"]["filter"] = Filter(operator).filter(f)
-                else:
-                    self._query["query"]["filtered"]["filter"] = Filter(operator).filter(f)
+                filter_object = Filter(operator).filter(f)
+            if self._scored:
+                self._query["query"]["function_score"]["query"]["filtered"]["filter"] = filter_object
+            else:
+                self._query["query"]["filtered"]["filter"] = filter_object
         return self
 
     def score(self, script_score, boost_mode="replace"):
@@ -82,9 +80,9 @@ class QuerySet(object):
     def _build_filtered_query(self):
         self._filtered = True
         if self._scored:
-            q = copy.deepcopy(self._query["query"]["function_score"]["query"])
+            q = deepcopy(self._query["query"]["function_score"]["query"])
         else:
-            q = copy.deepcopy(self._query["query"])
+            q = deepcopy(self._query["query"])
         filtered_query = {
             "filtered": {
                 "filter": {},
@@ -98,7 +96,7 @@ class QuerySet(object):
 
     def _build_scored_query(self):
         self._scored = True
-        q = copy.deepcopy(self._query["query"])
+        q = deepcopy(self._query["query"])
         self._query["query"] = {
             "function_score": {
                 "query": q
