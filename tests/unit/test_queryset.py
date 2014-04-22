@@ -56,7 +56,7 @@ def test_create_queryset_with_filter():
     compare(t._query, results)
 
 
-def test_create_queryset_with_filter():
+def test_create_queryset_with_filters():
     """
     Create QuerySet with Multiple Filters
     """
@@ -441,7 +441,7 @@ def test_create_queryset_with_only_block():
     # Then I see the appropriate JSON
     results = {
         "query": {"match_all": {}},
-        "fields": "_id"
+        "fields": ["_id"]
     }
 
     compare(t._query, results)

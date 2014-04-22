@@ -6,3 +6,4 @@ sure==1.2.2
 mock==1.0.1
 tox==1.4.3
 pep8
+ipdb

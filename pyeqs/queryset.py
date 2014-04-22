@@ -4,7 +4,7 @@ from __future__ import unicode_literals, absolute_import
 from copy import deepcopy
 
 from pyelasticsearch import ElasticSearch
-from . import Filter, Bool
+from . import Filter, Bool, QueryBuilder
 
 
 class QuerySet(object):
@@ -12,50 +12,32 @@ class QuerySet(object):
     def __init__(self, host, query=None, index='', ):
         self._host = host
         self._index = index
-        self._query = {"query": {}}
-        self._query_string = query
-        self._query_formed = False
-        self._filtered = False
-        self._scored = False
-        self._sorted = False
+        self._q = QueryBuilder(query_string=query)
         self._wrappers = []
         self._count = 0
         self._conn = None
-        self._build_query()
+        self._finalized_query = None
+
+    @property
+    def _query(self):
+        if self._finalized_query:
+            return self._finalized_query
+        else:
+            self._finalized_query = self._q._finalize_query()
+            return self._finalized_query
 
     def filter(self, f, operator="and"):
-        if self._filtered:
-            if self._scored:
-                self._query["query"]["function_score"]["query"]["filtered"]["filter"].filter(f)
-            else:
-                self._query["query"]["filtered"]["filter"].filter(f)
-        else:
-            self._build_filtered_query()
-            if isinstance(f, Filter):
-                filter_object = f
-            else:
-                filter_object = Filter(operator).filter(f)
-            if self._scored:
-                self._query["query"]["function_score"]["query"]["filtered"]["filter"] = filter_object
-            else:
-                self._query["query"]["filtered"]["filter"] = filter_object
-        return self
+        self._q.filter(f, operator=operator)
 
     def score(self, script_score, boost_mode="replace"):
-        if not self._scored:
-            self._build_scored_query()
-        self._query["query"]["function_score"]["script_score"] = script_score
-        self._query["query"]["function_score"]["boost_mode"] = boost_mode
-        return self
+        self._q.score(script_score, boost_mode=boost_mode)
 
     def only(self, fields):
-        self._query["fields"] = fields
+        self._q.fields(fields)
         return self
 
     def order_by(self, sorting):
-        if not self._sorted:
-            self._build_sorted_query()
-        self._query["sort"].append(sorting)
+        self._q.sort(sorting)
         return self
 
     def wrappers(self, wrapper):
@@ -64,48 +46,6 @@ class QuerySet(object):
 
     def count(self):
         return self._count
-
-    def _build_query(self):
-        if self._query_string:
-            self._query["query"] = {
-                "query_string": {
-                    "query": self._query_string
-                }
-            }
-        else:
-            self._query["query"] = {
-                "match_all": {}
-            }
-
-    def _build_filtered_query(self):
-        self._filtered = True
-        if self._scored:
-            q = deepcopy(self._query["query"]["function_score"]["query"])
-        else:
-            q = deepcopy(self._query["query"])
-        filtered_query = {
-            "filtered": {
-                "filter": {},
-                "query": q
-            }
-        }
-        if self._scored:
-            self._query["query"]["function_score"]["query"] = filtered_query
-        else:
-            self._query["query"] = filtered_query
-
-    def _build_scored_query(self):
-        self._scored = True
-        q = deepcopy(self._query["query"])
-        self._query["query"] = {
-            "function_score": {
-                "query": q
-            }
-        }
-
-    def _build_sorted_query(self):
-        self._sorted = True
-        self._query["sort"] = []
 
     def __getitem__(self, val):
         """
