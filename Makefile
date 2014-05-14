@@ -6,7 +6,7 @@
 #
 # <variables>
 PACKAGE=pyeqs
-CUSTOM_PIP_INDEX=
+CUSTOM_PIP_INDEX=pypi
 # </variables>
 
 all: unit functional integration
