@@ -54,3 +54,12 @@ print qs._query
 ```
 
 ## Contributing
+
+* Fork the `git` repo
+* Download the forked `git` repo
+* Create a branch for your changes
+* Link the `pre-commit` hook to `.git/hooks/pre-commit`
+* Run the tests to make sure everything works, before you make changes
+* Change the code for your PR
+* Write (or modify) tests to make sure your changes work
+* Submit a Pull Request
