@@ -1,0 +1,1 @@
+https://travis-ci.org/Yipit/pyeqs.svg
