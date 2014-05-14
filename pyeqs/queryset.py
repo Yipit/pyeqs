@@ -25,6 +25,7 @@ class QuerySet(object):
         klass = self.__class__
         query = deepcopy(self._q)
         clone = klass(host=self._host, query=query, index=self._index)
+        clone._conn = self._conn
         return clone
 
     @property

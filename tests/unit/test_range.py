@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from pyeqs.dsl import Range
-from tests.helpers import compare
+from tests.helpers import homogeneous
 
 
 def test_add_gte_range():
@@ -21,7 +21,7 @@ def test_add_gte_range():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_add_gt_range():
@@ -40,7 +40,7 @@ def test_add_gt_range():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_add_lte_range():
@@ -59,7 +59,7 @@ def test_add_lte_range():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_add_lt_range():
@@ -78,4 +78,4 @@ def test_add_lt_range():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)

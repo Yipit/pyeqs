@@ -2,7 +2,8 @@
 from __future__ import unicode_literals
 
 from pyeqs.dsl import Term
-from tests.helpers import compare
+from tests.helpers import homogeneous
+
 
 def test_add_term():
     """
@@ -18,4 +19,4 @@ def test_add_term():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)

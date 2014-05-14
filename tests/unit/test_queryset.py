@@ -7,7 +7,7 @@ import sure
 
 from pyeqs import QuerySet, Filter
 from pyeqs.dsl import Term, Sort, ScriptScore
-from tests.helpers import compare
+from tests.helpers import homogeneous
 
 
 def test_create_queryset():
@@ -22,7 +22,7 @@ def test_create_queryset():
         "query": {"match_all": {}}
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 def test_create_queryset_with_filter():
@@ -53,7 +53,7 @@ def test_create_queryset_with_filter():
         }
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 def test_create_queryset_with_filters():
@@ -90,7 +90,7 @@ def test_create_queryset_with_filters():
         }
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 def test_create_queryset_with_filter_block():
@@ -122,7 +122,7 @@ def test_create_queryset_with_filter_block():
         }
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 def test_create_queryset_with_sorting():
@@ -150,7 +150,7 @@ def test_create_queryset_with_sorting():
         }
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 def test_create_queryset_with_multiple_sorting():
@@ -186,7 +186,7 @@ def test_create_queryset_with_multiple_sorting():
         }
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 def test_create_queryset_with_scoring():
@@ -213,7 +213,7 @@ def test_create_queryset_with_scoring():
         }
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 def test_create_queryset_with_multiple_scoring():
@@ -244,7 +244,7 @@ def test_create_queryset_with_multiple_scoring():
         }
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 def test_create_queryset_with_scoring_and_filtering():
@@ -287,7 +287,7 @@ def test_create_queryset_with_scoring_and_filtering():
         }
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 def test_create_queryset_with_scoring_and_filtering_from_object():
@@ -331,7 +331,7 @@ def test_create_queryset_with_scoring_and_filtering_from_object():
         }
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 def test_create_queryset_with_filtering_and_scoring():
@@ -374,7 +374,7 @@ def test_create_queryset_with_filtering_and_scoring():
         }
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 def test_create_queryset_with_filters_and_scoring():
@@ -425,7 +425,7 @@ def test_create_queryset_with_filters_and_scoring():
         }
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 def test_create_queryset_with_only_block():
@@ -444,7 +444,7 @@ def test_create_queryset_with_only_block():
         "fields": ["_id"]
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 def test_queryset_count():
@@ -474,7 +474,7 @@ def test_queryset_string():
         }
     }
 
-    compare(t._query, results)
+    homogeneous(t._query, results)
 
 
 @httpretty.activate

@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from pyeqs.dsl import GeoDistance
-from tests.helpers import compare
+from tests.helpers import homogeneous
 
 
 def test_add_geo_distance_with_dict():
@@ -23,7 +23,7 @@ def test_add_geo_distance_with_dict():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_add_geo_distance_with_string():
@@ -44,7 +44,7 @@ def test_add_geo_distance_with_string():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_add_geo_distance_with_array():
@@ -65,4 +65,4 @@ def test_add_geo_distance_with_array():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)

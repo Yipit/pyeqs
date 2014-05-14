@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from pyeqs import Filter
 from pyeqs.dsl import Term
-from tests.helpers import compare
+from tests.helpers import homogeneous
 
 
 def test_create_filter():
@@ -18,7 +18,7 @@ def test_create_filter():
         "and": []
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_add_filter():
@@ -42,7 +42,7 @@ def test_add_filter():
         ]
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_filter_with_or():
@@ -57,7 +57,7 @@ def test_filter_with_or():
         "or": []
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_filter_with_and():
@@ -72,4 +72,4 @@ def test_filter_with_and():
         "and": []
     }
 
-    compare(t, results)
+    homogeneous(t, results)

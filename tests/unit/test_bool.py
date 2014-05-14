@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from pyeqs import Bool
 from pyeqs.dsl import Term
-from tests.helpers import compare
+from tests.helpers import homogeneous
 
 
 def test_create_bool():
@@ -18,7 +18,7 @@ def test_create_bool():
         "bool": {}
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_create_bool_with_must():
@@ -44,7 +44,7 @@ def test_create_bool_with_must():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_create_bool_with_must_not():
@@ -70,7 +70,7 @@ def test_create_bool_with_must_not():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_create_bool_with_should():
@@ -96,7 +96,7 @@ def test_create_bool_with_should():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_create_bool_with_multiple_clauses():
@@ -144,4 +144,4 @@ def test_create_bool_with_multiple_clauses():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)

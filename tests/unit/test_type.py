@@ -2,7 +2,8 @@
 from __future__ import unicode_literals
 
 from pyeqs.dsl import Type
-from tests.helpers import compare
+from tests.helpers import homogeneous
+
 
 def test_add_type():
     """
@@ -18,4 +19,4 @@ def test_add_type():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)

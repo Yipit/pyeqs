@@ -8,7 +8,7 @@ from mock import Mock
 
 from pyeqs import QuerySet, Filter
 from pyeqs.dsl import Term, Sort, ScriptScore
-from tests.helpers import compare
+from tests.helpers import heterogeneous, homogeneous
 
 
 def test_copy_queryset():
@@ -17,18 +17,6 @@ def test_copy_queryset():
     """
     # When create a queryset
     t = QuerySet("http://foobar:9200")
-
-    # And I query for results
-    fake_response = {
-        "hits": {
-            "total": 2,
-            "hits": ["foo", "bar"]
-        }
-    }
-
-    connection = Mock()
-    connection.search = Mock(return_value=fake_response)
-    t._get_connection = Mock(return_value=connection)
 
     new_object = t.objects
 
@@ -39,4 +27,30 @@ def test_copy_queryset():
     assert(new_object._query is not t._query)
 
     # But it is has the same properties
-    assert(new_object._query.keys() == t._query.keys())
+    homogeneous(new_object._query, t._query)
+
+
+def test_copy_queryset_with_filters():
+    """
+    Copy Queryset object and ensure distinct filters
+    """
+    # When create a queryset
+    t = QuerySet("http://foobar:9200")
+
+    # With filters
+    t.filter(Term("foo", "bar"))
+
+    # And I clone the queryset
+    new_object = t.objects
+
+    # And add new filters
+    new_object.filter(Term("bar", "baz"))
+
+    # Then the new object is not the same object as the queryset
+    assert(new_object is not t)
+
+    # And is not the same query object
+    assert(new_object._query is not t._query)
+
+    # But it is has the same properties
+    heterogeneous(new_object._query, t._query)

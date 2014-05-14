@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from pyeqs.dsl import ScriptScore
-from tests.helpers import compare
+from tests.helpers import homogeneous
 
 
 def test_add_score():
@@ -17,7 +17,7 @@ def test_add_score():
         "script": "foo"
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_add_score_with_params():
@@ -35,7 +35,7 @@ def test_add_score_with_params():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_add_score_with_lang():
@@ -51,7 +51,7 @@ def test_add_score_with_lang():
         "lang": "mvel"
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_add_score_with_params_and_lang():
@@ -70,4 +70,4 @@ def test_add_score_with_params_and_lang():
         "lang": "mvel"
     }
 
-    compare(t, results)
+    homogeneous(t, results)

@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from pyeqs.dsl import Sort
-from tests.helpers import compare
+from tests.helpers import homogeneous
 
 
 def test_add_sort():
@@ -19,7 +19,7 @@ def test_add_sort():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_add_sort_asc():
@@ -36,7 +36,7 @@ def test_add_sort_asc():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_add_sort_desc():
@@ -53,7 +53,7 @@ def test_add_sort_desc():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)
 
 
 def test_add_sort_with_mode():
@@ -71,4 +71,4 @@ def test_add_sort_with_mode():
         }
     }
 
-    compare(t, results)
+    homogeneous(t, results)
