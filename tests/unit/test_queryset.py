@@ -455,7 +455,7 @@ def test_queryset_count():
     t = QuerySet("http://foobar:9200")
 
     # Then I get an appropriate Count
-    t.count().should.equal(0)
+    t.count().should.equal(None)
 
 
 def test_queryset_string():
@@ -601,3 +601,166 @@ def test_queryset_getitem_multiple():
     results = t[0:1]
     len(results).should.equal(1)
     t.count().should.equal(1)
+
+
+@httpretty.activate
+def test_queryset_iteration():
+    """
+    Fetch results with QuerySet via __iter__
+    """
+
+    # When I create a query block
+    t = QuerySet("http://foobar:9200", index="bar")
+    wrapper = lambda y: map(lambda x: x['_id'], y)
+    t.wrappers(wrapper)
+
+    # And I have a record
+    response = {
+       "took": 12,
+       "hits": {
+          "total": 1,
+          "max_score": 10,
+          "hits": [
+             {
+                "_index": "bar",
+                "_type": "baz",
+                "_id": "1",
+                "_score": 10,
+                "_source": {
+                   "foo": "bar"
+                },
+                "sort": [
+                   1395687078000
+                ]
+             }
+          ]
+       }
+    }
+    httpretty.register_uri(httpretty.GET, "http://foobar:9200/bar/_search",
+                       body=json.dumps(response),
+                       content_type="application/json")
+
+    results = []
+    for result in t:
+        results.append(result)
+    len(results).should.equal(1)
+    t.count().should.equal(1)
+
+
+@httpretty.activate
+def test_queryset_iteration_with_no_results():
+    """
+    Fetch results with QuerySet via __iter__ with no results
+    """
+
+    # When I create a query block
+    t = QuerySet("http://foobar:9200", index="bar")
+    wrapper = lambda y: map(lambda x: x['_id'], y)
+    t.wrappers(wrapper)
+
+    # And I have no records
+    response = {
+       "took": 12,
+       "hits": {
+          "total": 0,
+          "max_score": 0,
+          "hits": []
+       }
+    }
+    httpretty.register_uri(httpretty.GET, "http://foobar:9200/bar/_search",
+                       body=json.dumps(response),
+                       content_type="application/json")
+
+    results = []
+    for result in t:
+        results.append(result)
+    len(results).should.equal(0)
+    t.count().should.equal(0)
+
+
+@httpretty.activate
+def test_queryset_iteration_with_multiple_cache_fetches():
+    """
+    Fetch results with QuerySet via __iter__ with multiple cache fetches
+    """
+
+    # When I create a query block
+    t = QuerySet("http://foobar:9200", index="bar")
+    wrapper = lambda y: map(lambda x: x['_id'], y)
+    t.wrappers(wrapper)
+
+    # And we lower the per request to force multiple fetches
+    t._per_request = 2
+
+    # And I have records
+    first_response = {
+       "took": 12,
+       "hits": {
+          "total": 3,
+          "max_score": 10,
+          "hits": [
+             {
+                "_index": "bar",
+                "_type": "baz",
+                "_id": "1",
+                "_score": 10,
+                "_source": {
+                   "foo": "bar"
+                },
+                "sort": [
+                   1395687078000
+                ]
+             },
+             {
+                "_index": "bar",
+                "_type": "baz",
+                "_id": "2",
+                "_score": 10,
+                "_source": {
+                   "foo": "barbar"
+                },
+                "sort": [
+                   1395687078000
+                ]
+             }
+          ]
+       }
+    }
+
+    second_response = {
+       "took": 12,
+       "hits": {
+          "total": 3,
+          "max_score": 10,
+          "hits": [
+             {
+                "_index": "bar",
+                "_type": "baz",
+                "_id": "3",
+                "_score": 10,
+                "_source": {
+                   "foo": "barbarbar"
+                },
+                "sort": [
+                   1395687078000
+                ]
+             }
+          ]
+       }
+    }
+    httpretty.register_uri(httpretty.GET, "http://foobar:9200/bar/_search",
+                        responses=[
+                           httpretty.Response(body=json.dumps(first_response)),
+                           httpretty.Response(body=json.dumps(second_response)),
+                        ],
+                        content_type="application/json")
+
+    # Then I should eventually get all records
+    results = []
+    for result in t:
+        results.append(result)
+    len(results).should.equal(3)
+    t.count().should.equal(3)
+    results[0].should.equal("1")
+    results[1].should.equal("2")
+    results[2].should.equal("3")

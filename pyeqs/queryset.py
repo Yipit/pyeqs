@@ -17,9 +17,13 @@ class QuerySet(object):
         else:
             self._q = QueryBuilder(query_string=query)
         self._wrappers = []
-        self._count = 0
+        self._count = None
         self._conn = None
         self._finalized_query = None
+        # Caching
+        self._cache = None
+        self._retrieved = 0
+        self._per_request = 10
 
     def _clone(self):
         klass = self.__class__
@@ -60,6 +64,40 @@ class QuerySet(object):
 
     def count(self):
         return self._count
+
+    def next(self):
+        """
+        Provide iteration capabilities
+
+        Use a small object cache for performance
+        """
+        if not self._cache:
+            self._cache = self._get_results()
+            self._retrieved += len(self._cache)
+
+        # If we don't have any other data to return, we just
+        # stop the iteration.
+        if not self._cache:
+            raise StopIteration()
+
+        # Consuming the cache and updating the "cursor"
+        return self._cache.pop(0)
+
+    def _get_results(self):
+        start = self._retrieved
+        if self._count is None:
+            # Always perform the first query since we don't know the count
+            upper_limit = start + 1
+        else:
+            upper_limit = self._count
+        if start < upper_limit:
+            end = self._retrieved + self._per_request
+            results = self[start:end]
+            return results
+        return []
+
+    def __iter__(self):
+        return self
 
     def __getitem__(self, val):
         """

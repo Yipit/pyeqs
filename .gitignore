@@ -6,4 +6,5 @@ dist/
 .tox/
 .DS_Store
 .build.log
+htmlcov/
 build/
