@@ -1,8 +1,9 @@
-# PyEQS
+# PyEQS [![Build Status](https://travis-ci.org/Yipit/pyeqs.svg)](https://travis-ci.org/Yipit/pyeqs)
 
 #### Python Elasticsearch Query Sets
 
-## Installation [https://travis-ci.org/Yipit/pyeqs](https://travis-ci.org/Yipit/pyeqs.svg)
+## Installation 
+
 
 ## Usage
 
