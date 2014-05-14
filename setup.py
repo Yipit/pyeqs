@@ -1,5 +1,6 @@
 # #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals, absolute_import
 
 import re
 import os
@@ -43,12 +44,10 @@ if __name__ == '__main__':
 
     packages = find_packages(exclude=['*tests*'])
 
-    print packages
-
     setup(
         name="pyeqs",
         license="GPL",
-        version='0.1.0',
+        version='0.1.1',
         description=u'Django Querysets-esque implementation for Elasticsearch',
         author=u'Andrew Gross',
         author_email=u'andrew.w.gross@gmail.com',
