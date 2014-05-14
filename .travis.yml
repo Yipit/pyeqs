@@ -5,3 +5,4 @@ python:
 install: "pip install -r development.txt --use-mirrors"
 script:
   - make unit
+  - make functional
