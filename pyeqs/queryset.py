@@ -12,11 +12,24 @@ class QuerySet(object):
     def __init__(self, host, query=None, index='', ):
         self._host = host
         self._index = index
-        self._q = QueryBuilder(query_string=query)
+        if isinstance(query, QueryBuilder):
+            self._q = query
+        else:
+            self._q = QueryBuilder(query_string=query)
         self._wrappers = []
         self._count = 0
         self._conn = None
         self._finalized_query = None
+
+    def _clone(self):
+        klass = self.__class__
+        query = deepcopy(self._q)
+        clone = klass(host=self._host, query=query, index=self._index)
+        return clone
+
+    @property
+    def objects(self):
+        return self._clone()
 
     @property
     def _query(self):
