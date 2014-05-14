@@ -1,0 +1,381 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import re
+import shlex
+import subprocess
+import sys
+
+os.environ['TESTING'] = "1"
+
+
+def wrap_text_with(color):
+    return lambda msg: '{}{}{}'.format(color, msg, NC)
+
+HIGHLIGHT = '\033[1;37m'
+GREEN = '\033[1;32m'
+RED = '\033[1;31m'
+NC = '\033[0m'
+
+ok = wrap_text_with(GREEN)
+error = wrap_text_with(RED)
+highlight = wrap_text_with(HIGHLIGHT)
+
+CHECKS = [
+# Pre-commit hooks
+#
+# It's a list of dictionaries containing instructions of how to
+# perform certain checks
+
+# There are plenty of examples below but it's worth mentioning the
+# command paramenter features specific to python files:
+
+# ~~~~~~
+# 'command': '/path/to/bin/your-script {first_file_name} {filenames} {module_name}'
+#
+#           WHERE:
+#
+#              *first_file_name* the name of the first relevant python module
+#
+#              *filenames*, a transitional alias to the
+#              `file_name` parameter.
+#
+#              *module_name*, the module name extracted from the
+#              pattern.
+#
+# ......................................................................................................
+#
+#                                       CHECKS
+
+    # {
+    #     # Test coverage hook
+    #     #
+    #     # Forbids commit if coverage is under 100%
+    #     #
+    #     # It might sound very restrictive but it actually makes sense
+    #     # under the following circumstances:
+    #     #
+    #     # * We will enforce 100% of unit test coverage starting from
+    #     # the smallest apps/libraries
+    #     #
+    #     # * The trigger only happens when there is a change in a unit
+    #     # test (in the future we could also have a django setting that
+    #     # lists mature apps that can enforce full coverage ALWAYS.)
+    #     #
+    #     #
+    #
+    #
+    #     'output': 'Checking test coverage of module {module_name}...',
+    #     'command': ('python scripts/coverage-check.py '
+    #                 '--module-name {module_name} '
+    #                 '--module-path {app_package_path} '
+    #                 '--module-path {app_module_path} '
+    #                 '--file-name {first_file_name} '),  # 2> /dev/null
+    #     'match_files': ['.*tests.unit.*?test\w*.*?\.py$'],
+    #     'error_message': (
+    #         'Not enough coverage, \033[35mbaby\033[0n'
+    #     )
+    # },
+    {
+        'output': 'Checking for ipdbs and pdbs...',
+        'command': 'grep -EHIn "import i?pdb" "{file_name}"',
+        'match_files': ['.*\.py$'],
+        'ignore_noqa_lines': True,
+    },
+    {
+        'output': 'Checking for print statements...',
+        'command': 'grep -HIn "^ *print \|^ *print(" "{file_name}"',
+        'match_files': ['.*\.py$'],
+        'ignore_files': ['.*migrations.*', '.*management/commands.*', '.*manage.py$',
+            '^scripts/.*', '^gists/.*', '^terrain/.*', '^fabfile.*', '^conf/.*',],
+        'ignore_noqa_lines': True,
+    },
+    {
+        'output': 'Checking for "import settings"...',
+        'command': 'grep -HIn "^import settings" "{file_name}"',
+        'match_files': ['.*\.py$'],
+        'error_message': (
+            "Did you mean 'from django.conf import settings'?"
+        )
+    },
+    {
+        'output': 'Checking for "assert_called_once"...',
+        'command': 'grep -HIn "assert_called_once[(]" "{file_name}"',
+        'match_files': ['.*\.py$'],
+    },
+    {
+        'output': 'Checking for unhandled merges...',
+        'command': 'grep -EHInr \'^(([<>]{{7}}\s.+)|(={{7}}))$\' "{file_name}"',
+    },
+    {
+        'output': 'Checking for "debugger" inside js and html files...',
+        'command': 'grep -Hn "debugger" "{file_name}"',
+        'match_files': ['(?:.*/.*\.js$|.*\.html$)'],
+        'ignore_files': [],
+    },
+    {
+        'output': 'Checking for html comments...',
+        'command': 'grep -Hn "<\!--" "{file_name}"',
+        'match_files': ['^.*\.html$'],
+        'error_message': (
+            "Avoid the use of HTML comments, it increases the size of the page and the DOM tree.\n"
+            "Use django comments instead. Ex: '{# your comment #}'"
+        )
+    },
+    {
+        'output': 'Checking for "=>" inside js test files...',
+        'command': 'grep -Hn "=>" "{file_name}"',
+        'match_files': ['^test-client/.*-test\.js$'],
+        'error_message': (
+            "focus rocket is a nice feature from busterjs\n"
+            "but should never be committed since it\n"
+            "limits the tests that are going to run."
+        )
+    },
+    {
+        'output': 'Checking for "from __future__ import unicode_literals"',
+        'command': 'grep -L "from __future__ import unicode_literals" "{file_name}"',
+        'match_files': ['.*\.py$'],
+        'ignore_files': ['.*migrations.*'],
+    },
+    {
+        'output': 'Checking for "# -*- coding: utf-8 -*-"',
+        'command': 'grep -L "coding: utf-8" "{file_name}"',
+        'match_files': ['.*\.py$'],
+        'ignore_files': ['.*migrations.*'],
+    },
+    {
+        'output': 'Running pep8...',
+        'command': 'pep8 -r --ignore=E501,E502,W293,E121,E123,E124,E125,E126,E127,E128 "{file_name}"',
+        'match_files': ['.*\.py$'],
+        'ignore_files': ['.*migrations.*', '^gists/.*', '^conf/.*',],
+    },
+    {
+        # to see the complete list of tranformations/fixes:
+        # run `2to3 -l` OR
+        # see the complete list with description here: http://docs.python.org/2/library/2to3.html
+        'output': 'Running 2to3...',
+        'command': ('2to3 -f xreadlines -f types -f tuple_params -f throw -f sys_exc '
+            '-f set_literal -f renames -f raise -f paren -f urllib '
+            '-f operator -f ne -f methodattrs -f long -f isinstance -f intern -f input '
+            '-f import -f imports2 -f idioms -f getcwdu -f funcattrs -f exitfunc '
+            '-f execfile -f exec -f except -f buffer -f apply -f numliterals -f basestring '
+            '-f has_key -f reduce -f repr '
+            '"{file_name}" 2> /dev/null'),
+        'match_files': ['.*\.py$'],
+        'error_message': (
+            'You probably have a code that will generate problems with python 3.\n'
+            'Take a look at http://packages.python.org/six/ to see a python 2 and 3 compatible way or\n'
+            'if the error relates to urllib, try to use requests: http://docs.python-requests.org/en/latest/\n'
+            'INFO: don\'t take the diff as an absolute truth.\n'
+            'More info:\n'
+            '* http://docs.python.org/3/library/2to3.html\n'
+            '* http://docs.pythonsprints.com/python3_porting/py-porting.html\n'
+            '* http://docs.python.org/release/3.0/whatsnew/3.0.html'
+        )
+    },
+    {
+        'output': 'Checking .travis.yml',
+        'command': 'travis-lint {file_name} | grep "is not a valid YAML"',
+        'match_files': ['\.travis\.yml'],
+    },
+]
+
+modified = re.compile('^[MA]\s+(?P<name>.*)$')
+
+
+def matches_file(file_name, match_files):
+    return any(re.compile(match_file).match(file_name) for match_file in match_files)
+
+
+def should_check_file(check, file_name):
+    return (not 'match_files' in check or matches_file(file_name, check['match_files']))\
+        and (not 'ignore_files' in check or not matches_file(file_name, check['ignore_files']))
+
+
+def get_relevant_module_infos(check_files):
+    regex = re.compile(
+        r'.*apps/(?P<appname>[\w/]+)'
+        '/tests/(?P<type>\w+)'
+        '(?P<submodules_path>[\w/]+)?'
+        '(?P<file_name>test.*?.py)$',
+    )
+
+    get_module = lambda path: regex.search(path)
+    get_clean_module_path = lambda info, group: info.group(group).strip('/').replace('/', '.')
+
+    prettify_info = lambda info: {
+        'appname': info.group('appname'),
+        'app_package_path': 'apps/' + '/'.join(filter(bool, [
+            get_clean_module_path(info, 'appname'),
+            get_clean_module_path(info, 'submodules_path'),
+        ])).replace('.', '/') + '/__init__.py',
+        'app_module_path': 'apps/' + '/'.join(filter(bool, [
+            get_clean_module_path(info, 'appname'),
+            get_clean_module_path(info, 'submodules_path'),
+        ])).replace('.', '/') + '.py',
+        'submodules_path': info.group('submodules_path'),
+        'module_name': '.'.join(filter(bool, [
+            get_clean_module_path(info, 'appname'),
+            get_clean_module_path(info, 'submodules_path'),
+        ])),
+        'first_file_name': info.group('file_name'),
+        'test_type': info.group('type'),
+    }
+    module_infos = map(prettify_info, filter(bool, map(get_module, check_files)))
+    return sorted(module_infos)
+
+possible_module_infos = set([
+    'module_name',
+    'test_type',
+    'first_file_name',
+    'submodules_path',
+    'app_module_path',
+    'app_package_path',
+])
+
+
+def check_files(files, check):
+    check_files = filter(lambda name: should_check_file(check, name), files)
+
+    if check_files:
+        if check.get('ignore_noqa_lines'):
+            check['command'] += ' | grep -vi "#*noqa"'
+
+        file_names = '" "'.join(check_files)
+        relevant_module_infos = get_relevant_module_infos(check_files)
+
+        extra_info = {}
+        required_infos = set(re.findall(r'[{](\w+)[}]', check['command']))
+
+        command_requires_extra_info = not bool(required_infos.difference(possible_module_infos))
+
+        if command_requires_extra_info:
+            if not relevant_module_infos:
+                return 0  # the current command requires
+                          # relevant_module_infos but none is
+                          # available, let's forget this one
+
+            extra_info = relevant_module_infos[0]
+            output_label = highlight(check['output'].format(**extra_info))
+
+        else:
+            output_label = highlight(check['output'])
+
+        sys.stdout.write(output_label)
+        sys.stdout.flush()
+
+        command = check['command'].format(file_name=file_names, filenames=file_names, **extra_info)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        out, err = process.communicate()
+
+        if out or err:
+            print error(' ✗')
+            print ' ', '\n  '.join(out.splitlines())
+
+            if err:
+                print err
+
+            if 'error_message' in check:
+                print
+                print highlight(check['error_message'])
+                print
+
+            return 1
+
+        print ok(' ✔ ')
+
+    return 0
+
+
+def run(test_name, command, env=None):
+
+    sys.stdout.write(highlight('Running {}...'.format(test_name)))
+    sys.stdout.flush()
+
+    full_env = os.environ
+    full_env.update(env or {})
+
+    try:
+        subprocess.check_output(
+            shlex.split(command),
+            stderr=subprocess.STDOUT,
+            env=full_env)
+    except subprocess.CalledProcessError as e:
+        print error(' ✗')
+        print e.output
+        raise SystemExit(e.returncode)
+    else:
+        print ok(' ✔ ')
+
+
+def check_call(command):
+    subprocess.check_call(shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+
+def get_committed_files():
+    files = []
+    out = subprocess.check_output(shlex.split('git status --porcelain'))
+    for line in out.splitlines():
+        match = modified.match(line.strip())
+        if match:
+            files.append(match.group('name'))
+
+    return filter(lambda f: 'scripts/pre-commit' not in f, files)
+
+
+def main(files, is_git_hook):
+
+    if is_git_hook:
+        files = get_committed_files()
+        # Stash any changes to the working tree that are not going to be committed
+        print highlight('Git stashing untracked changes...')
+        check_call('git stash --include-untracked --keep-index')
+
+    any_changes_on_files_ending_with = lambda ext: any([f.endswith(ext) for f in files])
+
+    try:
+
+        check_call('find . -name "*.pyc" -delete')
+
+        if any_changes_on_files_ending_with('.py'):
+            os.environ['TEST_TYPE'] = 'unit'
+            run('python unit tests', 'make unit', env={'SKIP_DEPS': 'true'})
+
+        result = 0
+
+        for check in CHECKS:
+            result += check_files(files, check)
+            if result and is_git_hook:
+                break
+
+    finally:
+
+        if is_git_hook:
+            # Unstash changes to the working tree that we had stashed
+            check_call('git reset --hard')
+            try:
+                # This hook can be called by a simple git commit --amend
+                # without anything to actually get from the stash. In this
+                # case, this command will break and we can safely ignore it.
+                check_call('git stash pop --quiet --index')
+            except subprocess.CalledProcessError:
+                pass
+
+    sys.exit(result)
+
+
+if __name__ == '__main__':
+    files = []
+
+    # if no arguments is passed it means that this
+    # script is being called as a git hook
+    is_git_hook = len(sys.argv) == 1
+    all_files = '--all-files' in sys.argv
+
+    if all_files:
+        files = subprocess.check_output(shlex.split('git ls-files --full-name')).strip().split('\n')
+    elif not is_git_hook:
+        files = sys.argv[1:]
+
+    main(files, is_git_hook)

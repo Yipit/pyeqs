@@ -32,7 +32,7 @@ run_test:
 
 install_deps:
 	@if [ -z $$VIRTUAL_ENV ]; then \
-		echo "You're not running this from a virtualenv, wtf dude?"; \
+		echo "You're not running this from a virtualenv, wtf?"; \
 		exit 1; \
 	fi
 

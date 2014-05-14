@@ -53,7 +53,7 @@ if __name__ == '__main__':
         author=u'Andrew Gross',
         author_email=u'andrew.w.gross@gmail.com',
         include_package_data=True,
-        url='https://github.com/yipit/pylastic-querysets',
+        url='https://github.com/yipit/pyeqs',
         packages=packages,
         classifiers=(
             'Development Status :: 3 - Alpha',
