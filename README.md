@@ -1,4 +1,4 @@
-# PyEQS [![Build Status](https://travis-ci.org/Yipit/pyeqs.svg)](https://travis-ci.org/Yipit/pyeqs)
+# PyEQS [![Build Status](https://travis-ci.org/Yipit/pyeqs.svg)](https://travis-ci.org/Yipit/pyeqs) [![Coverage Status](https://coveralls.io/repos/Yipit/pyeqs/badge.png)](https://coveralls.io/r/Yipit/pyeqs)
 
 #### Python Elasticsearch QuerySets
 
