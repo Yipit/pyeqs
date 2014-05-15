@@ -20,9 +20,9 @@ def heterogeneous(a, b):
     json.dumps(a).shouldnt.equal(json.dumps(b))
 
 
-def add_document(index, document):
+def add_document(index, document, **kwargs):
     document_type = "my_doc_type"
-    conn.create(index=index, doc_type=document_type, body=document, id=None, refresh=True)
+    conn.create(index=index, doc_type=document_type, body=document, refresh=True, **kwargs)
 
 
 def clean_elasticsearch(context):
