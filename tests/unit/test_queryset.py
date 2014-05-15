@@ -15,7 +15,7 @@ def test_create_queryset():
     Create Default QuerySet
     """
     # When create a queryset
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # Then I see the appropriate JSON
     results = {
@@ -30,7 +30,7 @@ def test_create_queryset_with_filter():
     Create QuerySet with Filter
     """
     # When create a query block
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # And I add a filter
     t.filter(Term("foo", "bar"))
@@ -61,7 +61,7 @@ def test_create_queryset_with_filters():
     Create QuerySet with Multiple Filters
     """
     # When create a query block
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # And I add a filter
     t.filter(Term("foo", "bar"))
@@ -98,7 +98,7 @@ def test_create_queryset_with_filter_block():
     Create QuerySet with Filter Block
     """
     # When create a query block
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # And I add a filter
     f = Filter("or").filter(Term("foo", "bar"))
@@ -130,7 +130,7 @@ def test_create_queryset_with_sorting():
     Create QuerySet with Sorting
     """
     # When create a query block
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # And I add sorting
     s = Sort("_id", order="asc")
@@ -158,7 +158,7 @@ def test_create_queryset_with_multiple_sorting():
     Create QuerySet with Multiple Sorting
     """
     # When create a query block
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # And I add sorting
     s = Sort("_id", order="asc")
@@ -194,7 +194,7 @@ def test_create_queryset_with_scoring():
     Create QuerySet with Scoring
     """
     # When create a query block
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # And I add scoring
     s = ScriptScore("foo = 0.0")
@@ -221,7 +221,7 @@ def test_create_queryset_with_multiple_scoring():
     Create QuerySet with Multiple Scoring
     """
     # When create a query block
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # And I add scoring
     s = ScriptScore("foo = 0.0")
@@ -252,7 +252,7 @@ def test_create_queryset_with_scoring_and_filtering():
     Create QuerySet with Scoring and Filtering
     """
     # When create a query block
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # And I add scoring
     s = ScriptScore("foo = 0.0")
@@ -295,7 +295,7 @@ def test_create_queryset_with_scoring_and_filtering_from_object():
     Create QuerySet with Scoring and Filter Object
     """
     # When create a query block
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # And I add scoring
     s = ScriptScore("foo = 0.0")
@@ -339,7 +339,7 @@ def test_create_queryset_with_filtering_and_scoring():
     Create QuerySet with Filtering and Scoring
     """
     # When create a query block
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # And I add filtering
     t.filter(Term("foo", "bar"))
@@ -382,7 +382,7 @@ def test_create_queryset_with_filters_and_scoring():
     Create QuerySet with Scoring and Multiple Filters
     """
     # When create a query block
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # And I add filtering
     t.filter(Term("foo", "bar"))
@@ -433,7 +433,7 @@ def test_create_queryset_with_only_block():
     Create QuerySet with Only block
     """
     # When create a query block
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # And I add an 'only' block
     t.only("_id")
@@ -452,7 +452,7 @@ def test_queryset_count():
     Get QuerySet Count
     """
     # When I create a query block
-    t = QuerySet("http://foobar:9200")
+    t = QuerySet("foobar")
 
     # Then I get an appropriate Count
     t.count().should.equal(None)
@@ -463,7 +463,7 @@ def test_queryset_string():
     Create QuerySet with String query
     """
     # When I create a query block
-    t = QuerySet("http://foobar:9200", query="foo")
+    t = QuerySet("foobar", query="foo")
 
     # Then I see the appropriate JSON
     results = {
@@ -483,7 +483,7 @@ def test_queryset_getitem():
     Fetch from QuerySet with __getitem__
     """
     # When I create a query block
-    t = QuerySet("http://foobar:9200", index="bar")
+    t = QuerySet("localhost", index="bar")
 
     # And I have records
     response = {
@@ -507,7 +507,7 @@ def test_queryset_getitem():
           ]
        }
     }
-    httpretty.register_uri(httpretty.GET, "http://foobar:9200/bar/_search",
+    httpretty.register_uri(httpretty.GET, "http://localhost:9200/bar/_search",
                        body=json.dumps(response),
                        content_type="application/json")
 
@@ -522,7 +522,7 @@ def test_queryset_getitem_with_wrapper():
     Fetch from QuerySet with __getitem__ and wrapper
     """
     # When I create a query block
-    t = QuerySet("http://foobar:9200", index="bar")
+    t = QuerySet("localhost", index="bar")
     wrapper = lambda y: map(lambda x: x['_id'], y)
     t.wrappers(wrapper)
 
@@ -548,7 +548,7 @@ def test_queryset_getitem_with_wrapper():
           ]
        }
     }
-    httpretty.register_uri(httpretty.GET, "http://foobar:9200/bar/_search",
+    httpretty.register_uri(httpretty.GET, "http://localhost:9200/bar/_search",
                        body=json.dumps(response),
                        content_type="application/json")
 
@@ -564,10 +564,9 @@ def test_queryset_getitem_multiple():
     Fetch from QuerySet with __getitem__ multiple times
     """
     # When I create a query block
-    t = QuerySet("http://foobar:9200", index="bar")
+    t = QuerySet("localhost", index="bar")
     wrapper = lambda y: map(lambda x: x['_id'], y)
     t.wrappers(wrapper)
-
     # And I have a record
     response = {
        "took": 12,
@@ -590,7 +589,7 @@ def test_queryset_getitem_multiple():
           ]
        }
     }
-    httpretty.register_uri(httpretty.GET, "http://foobar:9200/bar/_search",
+    httpretty.register_uri(httpretty.GET, "http://localhost:9200/bar/_search",
                        body=json.dumps(response),
                        content_type="application/json")
 
@@ -610,7 +609,7 @@ def test_queryset_iteration():
     """
 
     # When I create a query block
-    t = QuerySet("http://foobar:9200", index="bar")
+    t = QuerySet("foobar", index="bar")
     wrapper = lambda y: map(lambda x: x['_id'], y)
     t.wrappers(wrapper)
 
@@ -654,7 +653,7 @@ def test_queryset_iteration_with_no_results():
     """
 
     # When I create a query block
-    t = QuerySet("http://foobar:9200", index="bar")
+    t = QuerySet("foobar", index="bar")
     wrapper = lambda y: map(lambda x: x['_id'], y)
     t.wrappers(wrapper)
 
@@ -685,7 +684,7 @@ def test_queryset_iteration_with_multiple_cache_fetches():
     """
 
     # When I create a query block
-    t = QuerySet("http://foobar:9200", index="bar")
+    t = QuerySet("foobar", index="bar")
     wrapper = lambda y: map(lambda x: x['_id'], y)
     t.wrappers(wrapper)
 
@@ -750,10 +749,9 @@ def test_queryset_iteration_with_multiple_cache_fetches():
     }
     httpretty.register_uri(httpretty.GET, "http://foobar:9200/bar/_search",
                         responses=[
-                           httpretty.Response(body=json.dumps(first_response)),
-                           httpretty.Response(body=json.dumps(second_response)),
-                        ],
-                        content_type="application/json")
+                           httpretty.Response(body=json.dumps(first_response), content_type="application/json"),
+                           httpretty.Response(body=json.dumps(second_response), content_type="application/json"),
+                        ])
 
     # Then I should eventually get all records
     results = []

@@ -3,13 +3,13 @@ from __future__ import unicode_literals
 
 import json
 
-from pyelasticsearch import (
-        ElasticSearch,
-        ElasticHttpNotFoundError
+from elasticsearch import (
+        Elasticsearch,
+        TransportError
 )
 
-ELASTICSEARCH_URL = "http://localhost:9200"
-conn = ElasticSearch(ELASTICSEARCH_URL)
+ELASTICSEARCH_URL = "localhost"
+conn = Elasticsearch(ELASTICSEARCH_URL)
 
 
 def homogeneous(a, b):
@@ -21,7 +21,8 @@ def heterogeneous(a, b):
 
 
 def add_document(index, document):
-    conn.index(index, "foo", document, id=None, refresh=True)
+    document_type = "my_doc_type"
+    conn.create(index=index, doc_type=document_type, body=document, id=None, refresh=True)
 
 
 def clean_elasticsearch(context):
@@ -31,18 +32,15 @@ def clean_elasticsearch(context):
 def prepare_elasticsearch(context):
     clean_elasticsearch(context)
     _create_foo_index()
-    conn.health(wait_for_status='yellow')
+    conn.cluster.health(wait_for_status='yellow')
 
 
 def _create_foo_index():
-    conn.create_index("foo")
+    conn.indices.create(index="foo", ignore=400)
 
 
 def _delete_es_index(index):
-    try:
-        conn.delete_index(index)
-    except ElasticHttpNotFoundError:
-        pass
+    conn.indices.delete(index=index, ignore=[400, 404])
 
 
 prepare_data = [

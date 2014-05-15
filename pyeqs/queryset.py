@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
 
+import json
 from copy import deepcopy
 
-from pyelasticsearch import ElasticSearch
+from elasticsearch import Elasticsearch
 from . import Filter, Bool, QueryBuilder
 
 
@@ -46,9 +47,11 @@ class QuerySet(object):
 
     def filter(self, f, operator="and"):
         self._q.filter(f, operator=operator)
+        return self
 
     def score(self, script_score, boost_mode="replace"):
         self._q.score(script_score, boost_mode=boost_mode)
+        return self
 
     def only(self, fields):
         self._q.fields(fields)
@@ -113,9 +116,9 @@ class QuerySet(object):
     def _search(self, start, end):
         conn = self._get_connection()
         pagination_kwargs = self._get_pagination_kwargs(start, end)
-        self._raw_results = conn.search(self._query, index=self._index, **pagination_kwargs)
-        self._count = self._get_result_count(self._raw_results)
-        return self._raw_results["hits"]["hits"]
+        raw_results = conn.search(index=self._index, body=self._query, **pagination_kwargs)
+        self._count = self._get_result_count(raw_results)
+        return raw_results["hits"]["hits"]
 
     def _get_result_count(self, results):
         return int(results["hits"]["total"])
@@ -123,12 +126,12 @@ class QuerySet(object):
     def _get_pagination_kwargs(self, start, end):
         size = end - start
         kwargs = {
-            'es_from': start,
-            'es_size': size
+            'from_': start,  # from is a reserved word, so we use 'from_'
+            'size': size
         }
         return kwargs
 
     def _get_connection(self):
         if not self._conn:
-            self._conn = ElasticSearch(self._host)
+            self._conn = Elasticsearch([{"host": self._host}])
         return self._conn
