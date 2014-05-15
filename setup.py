@@ -47,7 +47,7 @@ if __name__ == '__main__':
     setup(
         name="pyeqs",
         license="GPL",
-        version='0.1.1',
+        version='0.2.0',
         description=u'Django Querysets-esque implementation for Elasticsearch',
         author=u'Andrew Gross',
         author_email=u'andrew.w.gross@gmail.com',
