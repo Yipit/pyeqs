@@ -21,8 +21,11 @@ def heterogeneous(a, b):
 
 
 def add_document(index, document, **kwargs):
-    document_type = "my_doc_type"
-    conn.create(index=index, doc_type=document_type, body=document, refresh=True, **kwargs)
+    if "doc_type" not in kwargs:
+        # Allow overriding doc type defaults
+        doc_type = "my_doc_type"
+        kwargs["doc_type"] = doc_type
+    conn.create(index=index, body=document, refresh=True, **kwargs)
 
 
 def clean_elasticsearch(context):
