@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from sure import scenario
 
-from pyeqs import QuerySet
+from pyeqs import QuerySet, Filter
 from pyeqs.dsl import Term
 from tests.helpers import prepare_data, cleanup_data, add_document
 
@@ -30,7 +30,7 @@ def test_simple_search(context):
 @scenario(prepare_data, cleanup_data)
 def test_simple_search_with_filter(context):
     """
-    Perform simple filtered search
+    Perform filtered search
     """
     # When create a queryset
     t = QuerySet("localhost", index="foo")
@@ -56,7 +56,7 @@ def test_create_queryset_with_multiple_filters(context):
     # When create a query block
     t = QuerySet("localhost", index="foo")
 
-    # Then I see the appropriate JSON
+    # And there are records
     add_document("foo", {"bar": "baz", "foo": "foo"})
     add_document("foo", {"bar": "bazbaz", "foo": "foo"})
     add_document("foo", {"bar": "bazbaz", "foo": "foofoo"})
@@ -69,3 +69,25 @@ def test_create_queryset_with_multiple_filters(context):
     # Then I get the appropriate response
     len(results).should.equal(1)
     results[0]['_source'].should.equal({"bar": "bazbaz", "foo": "foo"})
+
+
+@scenario(prepare_data, cleanup_data)
+def test_create_queryset_with_filter_block(context):
+    """
+    Perform search with Filter Block
+    """
+    # When create a query block
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz", "foo": "foo"})
+    add_document("foo", {"bar": "bazbaz", "foo": "foo"})
+    add_document("foo", {"bar": "bazbaz", "foo": "foofoo"})
+
+    # And I do a filtered search
+    f = Filter("or").filter(Term("bar", "baz")).filter(Term("foo", "foo"))
+    t.filter(f)
+    results = t[0:10]
+
+    # Then I get the appropriate response
+    len(results).should.equal(2)
