@@ -10,6 +10,8 @@ from elasticsearch import (
 
 ELASTICSEARCH_URL = "localhost"
 conn = Elasticsearch(ELASTICSEARCH_URL)
+index_name = "foo"
+default_doc_type = "my_doc_type"
 
 
 def homogeneous(a, b):
@@ -21,15 +23,12 @@ def heterogeneous(a, b):
 
 
 def add_document(index, document, **kwargs):
-    if "doc_type" not in kwargs:
-        # Allow overriding doc type defaults
-        doc_type = "my_doc_type"
-        kwargs["doc_type"] = doc_type
+    kwargs = _set_doc_type(kwargs)
     conn.create(index=index, body=document, refresh=True, **kwargs)
 
 
 def clean_elasticsearch(context):
-    _delete_es_index("foo")
+    _delete_es_index(index_name)
 
 
 def prepare_elasticsearch(context):
@@ -39,11 +38,36 @@ def prepare_elasticsearch(context):
 
 
 def _create_foo_index():
-    conn.indices.create(index="foo", ignore=400)
+    mapping = _get_mapping(index=index_name)
+    conn.indices.create(index=index_name, ignore=400, body=mapping)
 
 
 def _delete_es_index(index):
     conn.indices.delete(index=index, ignore=[400, 404])
+
+
+def _get_mapping(index, **kwargs):
+    kwargs = _set_doc_type(kwargs)
+    doc_type = kwargs['doc_type']
+    mapping = {
+        "mappings": {
+            doc_type: {
+                "properties": {
+                    "location": {
+                        "type": "geo_point"
+                    }
+                }
+            }
+        }
+    }
+    return mapping
+
+
+def _set_doc_type(kwargs):
+    if "doc_type" not in kwargs:
+        # Allow overriding doc type defaults
+        kwargs["doc_type"] = default_doc_type
+    return kwargs
 
 
 prepare_data = [
