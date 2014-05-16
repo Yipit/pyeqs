@@ -11,7 +11,7 @@ from tests.helpers import prepare_data, cleanup_data, add_document
 @scenario(prepare_data, cleanup_data)
 def test_search_with_lte_range(context):
     """
-    Perform search with lte range filter
+    Search with lte range filter
     """
     # When create a query block
     t = QuerySet("localhost", index="foo")
@@ -34,7 +34,7 @@ def test_search_with_lte_range(context):
 @scenario(prepare_data, cleanup_data)
 def test_search_with_lt_range(context):
     """
-    Perform search with lt range filter
+    Search with lt range filter
     """
     # When create a query block
     t = QuerySet("localhost", index="foo")
@@ -57,7 +57,7 @@ def test_search_with_lt_range(context):
 @scenario(prepare_data, cleanup_data)
 def test_search_with_gte_range(context):
     """
-    Perform search with gte range filter
+    Search with gte range filter
     """
     # When create a query block
     t = QuerySet("localhost", index="foo")
@@ -80,7 +80,7 @@ def test_search_with_gte_range(context):
 @scenario(prepare_data, cleanup_data)
 def test_search_with_gt_range(context):
     """
-    Perform search with gt range filter
+    Search with gt range filter
     """
     # When create a query block
     t = QuerySet("localhost", index="foo")

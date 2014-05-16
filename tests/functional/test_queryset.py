@@ -10,7 +10,7 @@ from tests.helpers import prepare_data, cleanup_data, add_document
 @scenario(prepare_data, cleanup_data)
 def test_simple_search(context):
     """
-    Perform search with match_all query
+    Search with match_all query
     """
     # When create a queryset
     t = QuerySet("localhost", index="foo")

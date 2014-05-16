@@ -11,7 +11,7 @@ from tests.helpers import prepare_data, cleanup_data, add_document
 @scenario(prepare_data, cleanup_data)
 def test_terms_search(context):
     """
-    Perform search with terms filter
+    Search with terms filter
     """
     # When create a queryset
     t = QuerySet("localhost", index="foo")

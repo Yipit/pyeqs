@@ -11,7 +11,7 @@ from tests.helpers import prepare_data, cleanup_data, add_document
 @scenario(prepare_data, cleanup_data)
 def test_simple_search_with_filter(context):
     """
-    Perform search with filter
+    Search with filter
     """
     # When create a queryset
     t = QuerySet("localhost", index="foo")
@@ -32,7 +32,7 @@ def test_simple_search_with_filter(context):
 @scenario(prepare_data, cleanup_data)
 def test_search_with_multiple_filters(context):
     """
-    Perform search with multiple filters
+    Search with multiple filters
     """
     # When create a query block
     t = QuerySet("localhost", index="foo")
@@ -55,7 +55,7 @@ def test_search_with_multiple_filters(context):
 @scenario(prepare_data, cleanup_data)
 def test_search_with_filter_block(context):
     """
-    Perform search with Filter Block
+    Search with Filter Block
     """
     # When create a query block
     t = QuerySet("localhost", index="foo")

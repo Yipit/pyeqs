@@ -11,7 +11,7 @@ from tests.helpers import prepare_data, cleanup_data, add_document
 @scenario(prepare_data, cleanup_data)
 def test_geo_distance_search_dict(context):
     """
-    Perform search with geo distance filter with dictionary
+    Search with geo distance filter with dictionary
     """
     # When create a queryset
     t = QuerySet("localhost", index="foo")
@@ -31,7 +31,7 @@ def test_geo_distance_search_dict(context):
 @scenario(prepare_data, cleanup_data)
 def test_geo_distance_search_string(context):
     """
-    Perform search with geo distance filter with string
+    Search with geo distance filter with string
     """
     # When create a queryset
     t = QuerySet("localhost", index="foo")
@@ -51,7 +51,7 @@ def test_geo_distance_search_string(context):
 @scenario(prepare_data, cleanup_data)
 def test_geo_distance_search_array(context):
     """
-    Perform search with geo distance filter with array
+    Search with geo distance filter with array
     """
     # When create a queryset
     t = QuerySet("localhost", index="foo")

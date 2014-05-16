@@ -11,7 +11,7 @@ from tests.helpers import prepare_data, cleanup_data, add_document
 @scenario(prepare_data, cleanup_data)
 def test_search_with_asc_sorting(context):
     """
-    Perform search with ascending sorting
+    Search with ascending sorting
     """
     # When create a query block
     t = QuerySet("localhost", index="foo")
@@ -35,7 +35,7 @@ def test_search_with_asc_sorting(context):
 @scenario(prepare_data, cleanup_data)
 def test_search_with_desc_sorting(context):
     """
-    Perform search with descending sorting
+    Search with descending sorting
     """
     # When create a query block
     t = QuerySet("localhost", index="foo")
@@ -59,7 +59,7 @@ def test_search_with_desc_sorting(context):
 @scenario(prepare_data, cleanup_data)
 def test_search_with_mode_sorting(context):
     """
-    Perform search with descending sorting and mode
+    Search with descending sorting and mode
     """
     # When create a query block
     t = QuerySet("localhost", index="foo")

@@ -11,7 +11,7 @@ from tests.helpers import prepare_data, cleanup_data, add_document
 @scenario(prepare_data, cleanup_data)
 def test_search_with_type(context):
     """
-    Perform search with type filter
+    Search with type filter
     """
     # When create a query block
     t = QuerySet("localhost", index="foo")
