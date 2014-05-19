@@ -28,6 +28,26 @@ def test_simple_search(context):
 
 
 @scenario(prepare_data, cleanup_data)
+def test_string_search(context):
+    """
+    Search with string query
+    """
+    # When create a queryset
+    t = QuerySet("localhost", query="cheese", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "banana"})
+    add_document("foo", {"bar": "cheese"})
+
+    # And I do a search
+    results = t[0:10]
+
+    # Then I get a the expected results
+    len(results).should.equal(1)
+    results[0]['_source'].should.equal({"bar": "cheese"})
+
+
+@scenario(prepare_data, cleanup_data)
 def test_search_with_filter(context):
     """
     Search with match_all query and filter
