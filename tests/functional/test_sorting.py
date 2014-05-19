@@ -81,7 +81,7 @@ def test_search_with_mode_sorting(context):
 
 
 @scenario(prepare_data, cleanup_data)
-def test_search_with_asc_sorting(context):
+def test_search_with_multiple_sorts(context):
     """
     Search with multiple sorts
     """
