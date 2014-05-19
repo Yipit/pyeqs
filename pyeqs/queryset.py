@@ -39,11 +39,7 @@ class QuerySet(object):
 
     @property
     def _query(self):
-        if self._finalized_query:
-            return self._finalized_query
-        else:
-            self._finalized_query = self._q._finalize_query()
-            return self._finalized_query
+        return self._q._finalize_query()
 
     def filter(self, f, operator="and"):
         self._q.filter(f, operator=operator)
