@@ -229,10 +229,8 @@ def test_search_with_iterator(context):
     t.order_by(Sort("bar", order="asc"))
 
     # Then I get the expected results
-    val = 0
-    for result in t:
-        result['_source'].should.equal({"bar": val})
-        val = val + 1
+    for (counter, result) in enumerate(t):
+        result['_source'].should.equal({"bar": counter})
 
     len(t).should.equal(5)
     t.count().should.equal(5)
