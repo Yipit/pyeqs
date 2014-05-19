@@ -9,16 +9,13 @@ PACKAGE=pyeqs
 CUSTOM_PIP_INDEX=pypi
 # </variables>
 
-all: unit functional integration
+all: unit functional
 
 unit:
 	@make run_test suite=unit
 
 functional:
 	@make run_test suite=functional
-
-integration:
-	@make run_test suite=integration
 
 prepare: clean install_deps
 

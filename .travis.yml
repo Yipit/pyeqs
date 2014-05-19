@@ -6,7 +6,6 @@ services:
   - elasticsearch
 install: "pip install -r development.txt --use-mirrors"
 script:
-  - make unit
-  - make functional
+  - make
 after_success:
   - coveralls
