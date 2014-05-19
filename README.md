@@ -4,6 +4,10 @@
 
 A python library to simplify building complex Elasticsearch JSON queries.  Based on the Django QuerySet API, backed by the [official python elasticsearch library](https://github.com/elasticsearch/elasticsearch-py).  Supports Elasticsearch `1.0+`.
 
+#### Current Development Status
+
+Currently pre `v1.0`, so the API is not locked in.  This project aims to follow [semantic versioning](http://semver.org/) once it reaches a stable API.  The only issues may arise as the backend `elasticsearch-py` library locks its versions to *Elasticsearch* releases.
+
 ## Installation
 
 ```bash
@@ -23,7 +27,8 @@ print qs._query
   'query': {
     'match_all': {}
   }
-}"""
+}
+"""
 ```
 
 ```python
@@ -37,7 +42,8 @@ print qs._query
       'query': 'cheese'
     }
   }
-}"""
+}
+"""
 ```
 
 #### Filtering
@@ -71,7 +77,8 @@ print qs._query
       }
     }
   }
-}"""
+}
+"""
 ```
 
 #### Boolean Filters
@@ -118,7 +125,7 @@ qs.wrapper(lambda x: x['_id'])
 ```python
 from pyeqs import QuerySet
 qs = QuerySet("127.0.0.1", index="my_index")
-qs.only('id')
+qs.only('_id')
 ```
 
 #### Reusing Querysets
