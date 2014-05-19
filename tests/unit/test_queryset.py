@@ -643,6 +643,7 @@ def test_queryset_iteration():
     for result in t:
         results.append(result)
     len(results).should.equal(1)
+    len(t).should.equal(1)
     t.count().should.equal(1)
 
 
