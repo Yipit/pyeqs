@@ -2,7 +2,7 @@
 
 #### Python Elasticsearch QuerySets
 
-A python library to simplify building complex Elasticsearch JSON queries.  Based on the Django QuerySet API.  Backed by the official python elasticsearch library
+A python library to simplify building complex Elasticsearch JSON queries.  Based on the Django QuerySet API.  Backed by the [official python elasticsearch library](https://github.com/elasticsearch/elasticsearch-py).  Supports Elasticsearch `1.0+`.
 
 ## Installation
 
