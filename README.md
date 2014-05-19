@@ -61,7 +61,7 @@ print qs._query
 * Download the forked `git` repo
 * Create a branch for your changes
 * Link the `pre-commit` hook to `.git/hooks/pre-commit`
-* Run the tests to make sure everything works, before you make changes
+* Run the tests, *before you make changes*, to make sure everything works
 * Change the code for your PR
 * Write (or modify) tests to make sure your changes work
 * Submit a Pull Request
