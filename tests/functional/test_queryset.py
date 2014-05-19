@@ -177,3 +177,29 @@ def test_wrappers(context):
     results[0].should.equal(2)
     results[1].should.equal(3)
     results[2].should.equal(4)
+
+
+@scenario(prepare_data, cleanup_data)
+def test_search_as_queryset_with_filter(context):
+    """
+    Search with match_all query and filter on a cloned queryset
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "bazbaz"})
+
+    # And I do a filter on my new object
+    my_search = t.objects.filter(Term("bar", "baz"))
+
+    # And a different filter on my old object
+    t.filter(Term("bar", "bazbaz"))
+
+    # And I do a search
+    results = my_search[0:10]
+
+    # Then I get a the expected results
+    len(results).should.equal(1)
+    results[0]['_source'].should.equal({"bar": "baz"})
