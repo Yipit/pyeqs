@@ -147,6 +147,6 @@ def test_search_with_filter_and_scoring_and_sorting_and_fields(context):
 
     # Then I get a the expected results
     len(results).should.equal(3)
-    results[0]['fields'].should.equal({"bar": "baz"})
-    results[1]['fields'].should.equal({"bar": "baz"})
-    results[2]['fields'].should.equal({"bar": "baz"})
+    results[0]['fields'].should.equal({"bar": ["baz"]})
+    results[1]['fields'].should.equal({"bar": ["baz"]})
+    results[2]['fields'].should.equal({"bar": ["baz"]})
