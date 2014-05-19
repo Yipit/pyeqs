@@ -57,11 +57,12 @@ if __name__ == '__main__':
         classifiers=(
             'Development Status :: 3 - Alpha',
             'Intended Audience :: Developers',
-            'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+            'License :: OSI Approved :: MIT',
             'Natural Language :: English',
             'Operating System :: Microsoft',
             'Operating System :: POSIX',
             'Programming Language :: Python',
+            'Programming Language :: Python :: 2.6',
             'Programming Language :: Python :: 2.7',
         )
     )
