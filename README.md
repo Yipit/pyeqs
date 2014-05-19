@@ -68,3 +68,37 @@ print qs._query
   }
 }"""
 ```
+
+#### Complex Filtering
+
+```python
+from pyeqs import QuerySet
+from pyeqs.dsl import Term, Type
+qs = QuerySet("127.0.0.1", index="my_index")
+qs.filter(Term("foo", "bar")).filter(Type("baz"))
+print qs._query
+"""
+{
+  'query': {
+    'filtered': {
+      'filter': {
+        'and': [
+          {
+            'term': {
+              'foo': 'bar'
+            }
+          },
+          {
+            'type': {
+              'value': 'baz'
+            }
+          }
+        ]
+      },
+      'query': {
+        'match_all': {}
+      }
+    }
+  }
+}"""
+```
