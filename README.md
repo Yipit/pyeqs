@@ -2,7 +2,7 @@
 
 #### Python Elasticsearch QuerySets
 
-A python library to simplify building complex Elasticsearch JSON queries.  Based on the Django QuerySet API.
+A python library to simplify building complex Elasticsearch JSON queries.  Based on the Django QuerySet API.  Backed by the official python elasticsearch library
 
 ## Installation
 
@@ -12,11 +12,11 @@ pip install pyeqs
 
 ## Usage
 
-Simple querying
+#### Simple querying
 
 ```python
 from pyeqs import QuerySet
-qs = QuerySet("http://localhost:9200", index="my_index")
+qs = QuerySet("127.0.0.1", index="my_index")
 print qs._query
 """
 {
@@ -26,12 +26,26 @@ print qs._query
 }"""
 ```
 
-Simple Filtering
+```python
+from pyeqs import QuerySet
+qs = QuerySet("127.0.0.1", query="cheese", index="my_index")
+print qs._query
+"""
+{
+  'query': {
+    'query_string': {
+      'query': 'cheese'
+    }
+  }
+}"""
+```
+
+#### Simple Filtering
 
 ```python
 from pyeqs import QuerySet
 from pyeqs.dsl import Term
-qs = QuerySet("http://localhost:9200", index="my_index")
+qs = QuerySet("127.0.0.1", index="my_index")
 qs.filter(Term("foo", "bar"))
 print qs._query
 """
@@ -54,14 +68,3 @@ print qs._query
   }
 }"""
 ```
-
-## Contributing
-
-* Fork the `git` repo
-* Download the forked `git` repo
-* Create a branch for your changes
-* Link the `pre-commit` hook to `.git/hooks/pre-commit`
-* Run the tests, *before you make changes*, to make sure everything works
-* Change the code for your PR
-* Write (or modify) tests to make sure your changes work
-* Submit a Pull Request
