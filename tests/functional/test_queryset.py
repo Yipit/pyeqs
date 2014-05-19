@@ -203,3 +203,36 @@ def test_search_as_queryset_with_filter(context):
     # Then I get a the expected results
     len(results).should.equal(1)
     results[0]['_source'].should.equal({"bar": "baz"})
+
+
+@scenario(prepare_data, cleanup_data)
+def test_search_with_iterator(context):
+    """
+    Search using an iterator
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And set iterator fetching to a small size
+    t._per_request = 2
+
+    # And there are records
+    add_document("foo", {"bar": 0})
+    add_document("foo", {"bar": 1})
+    add_document("foo", {"bar": 2})
+    add_document("foo", {"bar": 3})
+    add_document("foo", {"bar": 4})
+
+    # And I do a filter on my new object
+
+    # And a different filter on my old object
+    t.order_by(Sort("bar", order="asc"))
+
+    # Then I get the expected results
+    val = 0
+    for result in t:
+        result['_source'].should.equal({"bar": val})
+        val = val + 1
+
+    len(t).should.equal(5)
+    t.count().should.equal(5)

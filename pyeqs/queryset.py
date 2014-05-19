@@ -95,6 +95,9 @@ class QuerySet(object):
             return results
         return []
 
+    def __len__(self):
+        return self.count()
+
     def __iter__(self):
         return self
 
