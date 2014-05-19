@@ -150,3 +150,30 @@ def test_search_with_filter_and_scoring_and_sorting_and_fields(context):
     results[0]['fields'].should.equal({"bar": ["baz"]})
     results[1]['fields'].should.equal({"bar": ["baz"]})
     results[2]['fields'].should.equal({"bar": ["baz"]})
+
+
+@scenario(prepare_data, cleanup_data)
+def test_wrappers(context):
+    """
+    Search with wrapped match_all query
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": 1})
+    add_document("foo", {"bar": 2})
+    add_document("foo", {"bar": 3})
+
+    # And I do a search
+    def wrapper_function(search_results):
+        return map(lambda x: x['_source']['bar'] + 1, search_results)
+    t.wrappers(wrapper_function)
+    t.order_by(Sort("bar", order="asc"))
+    results = t[0:10]
+
+    # Then I get a the expected results
+    len(results).should.equal(3)
+    results[0].should.equal(2)
+    results[1].should.equal(3)
+    results[2].should.equal(4)
