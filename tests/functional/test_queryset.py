@@ -120,3 +120,33 @@ def test_search_with_filter_and_scoring_and_sorting(context):
     results[0]['_source'].should.equal({"bar": "baz", "scoring_field": 0, "sorting_field": 30})
     results[1]['_source'].should.equal({"bar": "baz", "scoring_field": 1, "sorting_field": 20})
     results[2]['_source'].should.equal({"bar": "baz", "scoring_field": 2, "sorting_field": 10})
+
+
+@scenario(prepare_data, cleanup_data)
+def test_search_with_filter_and_scoring_and_sorting_and_fields(context):
+    """
+    Search with match_all query, filter, scoring, sorting, and fields
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz", "scoring_field": 0, "sorting_field": 30})
+    add_document("foo", {"bar": "baz", "scoring_field": 1, "sorting_field": 20})
+    add_document("foo", {"bar": "baz", "scoring_field": 2, "sorting_field": 10})
+    add_document("foo", {"bar": "bazbaz", "scoring_field": 3, "sorting_field": 0})
+
+    # And I do a search
+    t.filter(Term("bar", "baz"))
+    score = ScriptScore("final_score = 0 + doc['scoring_field'].value;")
+    t.score(score)
+    sorting = Sort("sorting_field", order="desc")
+    t.order_by(sorting)
+    t.only(["bar"])
+    results = t[0:10]
+
+    # Then I get a the expected results
+    len(results).should.equal(3)
+    results[0]['fields'].should.equal({"bar": "baz"})
+    results[1]['fields'].should.equal({"bar": "baz"})
+    results[2]['fields'].should.equal({"bar": "baz"})
