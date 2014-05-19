@@ -63,12 +63,8 @@ class QueryBuilder(object):
         self._sorting.append(sorting)
         return self
 
-    def _build_scored_query(self):
-        self._scored = True
-
     def score(self, script_score, boost_mode="replace"):
-        if not self._scored:
-            self._build_scored_query()
+        self._scored = True
         self._score_dsl = {
             "function_score": {
                 "script_score": script_score,
