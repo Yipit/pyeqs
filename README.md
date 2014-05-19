@@ -74,7 +74,7 @@ print qs._query
 }"""
 ```
 
-### Boolean Filters
+#### Boolean Filters
 
 ```python
 from pyeqs import QuerySet, Bool
@@ -85,7 +85,7 @@ b.must(Term("foo", "bar"))
 qs.filter(b)
 ```
 
-### Sorting
+#### Sorting
 
 ```python
 from pyeqs import QuerySet
@@ -94,7 +94,7 @@ qs = QuerySet("127.0.0.1", index="my_index")
 qs.order_by(Sort("_id", order="desc"))
 ```
 
-### Scoring
+#### Scoring
 
 ```python
 from pyeqs import QuerySet
@@ -103,7 +103,7 @@ qs = QuerySet("127.0.0.1", index="my_index")
 qs.score(ScriptScore("score = foo + bar;", lang="mvel", params={"bar": 1}))
 ```
 
-### Wrapping Results
+#### Wrapping Results
 
 ```python
 from pyeqs import QuerySet
@@ -113,7 +113,7 @@ qs.filter(Term("foo", 1)
 qs.wrapper(lambda x: x['_id'])
 ```
 
-### Limiting Returned Fields
+#### Limiting Returned Fields
 
 ```python
 from pyeqs import QuerySet
@@ -121,7 +121,7 @@ qs = QuerySet("127.0.0.1", index="my_index")
 qs.only('id')
 ```
 
-### Reusing Querysets
+#### Reusing Querysets
 
 ```python
 from pyeqs import QuerySet
@@ -135,7 +135,7 @@ only_bar = qs.objects.filter(Term("foo", "bar"))
 only_baz = qs.objects.filter(Term("foo", "baz"))
 ```
 
-### Slicing Querysets
+#### Slicing Querysets
 
 ```python
 from pyeqs import QuerySet
@@ -145,7 +145,7 @@ qs.filter(Term("foo", "bar"))
 results = qs[0:10]  # Uses from/size in the background
 ```
 
-### Iterating over Quersets
+#### Iterating over Quersets
 
 ```python
 from pyeqs import QuerySet
@@ -157,7 +157,7 @@ for result in qs:
   # Builds a cache of 10 results at a time and iterates
 ```
 
-### Getting Counts
+#### Getting Counts
 
 ```python
 from pyeqs import QuerySet
