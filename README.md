@@ -175,3 +175,15 @@ qs.count()   # None, since we haven't queried
 qs[0:10]
 qs.count()   # Returns number of hits
 ```
+
+## Alternatives
+
+#### Python
+* [ElasticUtils](http://elasticutils.readthedocs.org/en/latest/): A library by Mozilla uses a syntax leveraging built in &, | and ~ to construct queries.
+* [Elasticsearch-dsl-py](https://github.com/elasticsearch/elasticsearch-dsl-py): A library by Elasticsearch that is similar and compatible with ElasticUtils.
+
+#### Ruby
+* [Plunk](https://github.com/elbii/plunk): A ruby library to allow you to write strings to queries that have more power than simple 'query string' requests
+
+#### Haskell
+* [Bloodhound](https://github.com/bitemyapp/bloodhound/): A basic Elasticsearch Client that also has the ability to leverage the languages built in operators to construct queries.
