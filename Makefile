@@ -45,7 +45,7 @@ clean:
 	@find . -name '*.pyc' -delete
 	@find . -name '*.so' -delete
 	@find . -name __pycache__ -delete
-	@rm -rf .coverage *.egg-info *.log build dist MANIFEST htmlcov
+	@rm -rf .coverage *.egg-info *.log build dist MANIFEST htmlcov .DS_Store .build.log
 
 publish:
 	@if [ -e "$$HOME/.pypirc" ]; then \
