@@ -1,3 +1,7 @@
+### `0.3.3`
+
+* More flexible passing of connection parameters to backend library
+
 ### `0.3.2`
 
 * Don't lock `six` version so explicitly.
