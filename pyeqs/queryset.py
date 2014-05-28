@@ -132,5 +132,14 @@ class QuerySet(object):
 
     def _get_connection(self):
         if not self._conn:
-            self._conn = Elasticsearch([{"host": self._host}])
+            host_connection_info = self._parse_host_connection_info(self._host)
+            self._conn = Elasticsearch(host_connection_info)
         return self._conn
+
+    def _parse_host_connection_info(self, host):
+        if isinstance(host, (str, unicode)):
+            return [{"host": host}]
+        if isinstance(host, dict):
+            return [host]
+        # Default to just using what was given to us
+        return host
