@@ -72,3 +72,22 @@ def test_add_sort_with_mode():
     }
 
     homogeneous(t, results)
+
+
+def test_add_sort_with_mode_and_missing():
+    """
+    Create Sort Block with Mode and Missing
+    """
+    # When add a Sort block
+    t = Sort("foo", mode="bar", missing="_last")
+
+    # Then I see the appropriate JSON
+    results = {
+        "foo": {
+            "order": "asc",
+            "mode": "bar",
+            "missing": "_last"
+        }
+    }
+
+    homogeneous(t, results)

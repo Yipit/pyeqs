@@ -1,3 +1,8 @@
+### `0.4.0`
+
+* Add option to specify 'missing' when creating a sort block
+
+
 ### `0.3.3`
 
 * More flexible passing of connection parameters to backend library
