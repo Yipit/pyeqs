@@ -120,8 +120,8 @@ def test_search_with_missing_sort(context):
     add_document("foo", {"bar": 10, "baz": None})
 
     # And I add sorting
-    first_sort = Sort("bar", order="asc", missing='_first')
-    t.order_by(first_sort)
+    sort = Sort("baz", order="asc", missing='_last')
+    t.order_by(sort)
     results = t[0:10]
 
     # Then my results have the proper sorting
