@@ -66,3 +66,24 @@ def test_add_geo_distance_with_array():
     }
 
     homogeneous(t, results)
+
+
+def test_add_geo_distance_with_field_name():
+    """
+    Create Geo Distance with Field Name
+    """
+    # When add a Geo Distance field with a field name
+    t = GeoDistance({"lat": 1.0, "lon": 2.0}, "20mi", field_name="locations.location")
+
+    # Then I see the appropriate JSON
+    results = {
+        "geo_distance": {
+            "distance": "20mi",
+            "locations.location": {
+                "lat": 1.0,
+                "lon": 2.0
+            }
+        }
+    }
+
+    homogeneous(t, results)

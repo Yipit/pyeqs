@@ -55,6 +55,9 @@ def _get_mapping(index, **kwargs):
                 "properties": {
                     "location": {
                         "type": "geo_point"
+                    },
+                    "foo_loc": {
+                        "type": "geo_point"
                     }
                 }
             }

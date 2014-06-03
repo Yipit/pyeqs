@@ -4,7 +4,7 @@ from __future__ import unicode_literals, absolute_import
 
 class GeoDistance(dict):
 
-    def __init__(self, coordinates, distance):
+    def __init__(self, coordinates, distance, field_name="location"):
         """
         Geo Distance Filter
 
@@ -17,12 +17,13 @@ class GeoDistance(dict):
         super(GeoDistance, self).__init__()
         self.coordinates = self._parse_coordinates(coordinates)
         self.distance = distance
+        self.field_name = field_name
         self["geo_distance"] = self._build_dict()
 
     def _build_dict(self):
         geo_distance = {
             "distance": self.distance,
-            "location": {
+            self.field_name: {
                 'lat': self.coordinates[0],
                 'lon': self.coordinates[1]
             }
