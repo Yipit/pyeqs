@@ -3,6 +3,7 @@ from __future__ import unicode_literals, absolute_import
 
 from . import Filter
 from copy import deepcopy
+from pyeqs.dsl import MatchAll
 
 
 class QueryBuilder(object):
@@ -28,7 +29,7 @@ class QueryBuilder(object):
         if self._query_string:
             self._query_dsl = {"query_string": {"query": self._query_string}}
         else:
-            self._query_dsl = {"match_all": {}}
+            self._query_dsl = MatchAll()
 
     def _build_filtered_query(self, f, operator):
         """
