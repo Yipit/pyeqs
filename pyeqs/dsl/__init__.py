@@ -8,9 +8,11 @@ from .sort import Sort  # noqa
 from .term import Term  # noqa
 from .terms import Terms  # noqa
 from .type import Type  # noqa
+from .match_all import MatchAll  # noqa
 
 __all__ = (
     'GeoDistance',
+    'MatchAll'
     'Range',
     'ScriptScore',
     'Sort',
