@@ -1,8 +1,11 @@
+### `0.5.1`
+
+* Allow custom field names in GeoDistance queries
+
 ### `0.5.0`
 
 * Add `match_all` to DSL.
 * Switch default query to use new DSL match all
-
 
 ### `0.4.0`
 
