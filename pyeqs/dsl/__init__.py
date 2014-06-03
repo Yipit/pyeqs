@@ -9,10 +9,12 @@ from .term import Term  # noqa
 from .terms import Terms  # noqa
 from .type import Type  # noqa
 from .match_all import MatchAll  # noqa
+from .missing import Missing
 
 __all__ = (
     'GeoDistance',
-    'MatchAll'
+    'MatchAll',
+    'Missing',
     'Range',
     'ScriptScore',
     'Sort',
