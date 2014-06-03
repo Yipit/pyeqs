@@ -1,3 +1,8 @@
+### `0.6.0`
+
+* Add `missing` to DSL
+
+
 ### `0.5.1`
 
 * Allow custom field names in GeoDistance queries
