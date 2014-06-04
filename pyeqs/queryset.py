@@ -10,7 +10,7 @@ from . import Filter, Bool, QueryBuilder
 
 class QuerySet(object):
 
-    def __init__(self, host, query=None, index='', ):
+    def __init__(self, host, query=None, index=''):
         self._host = host
         self._index = index
         if isinstance(query, QueryBuilder):
@@ -29,7 +29,7 @@ class QuerySet(object):
     def _clone(self):
         klass = self.__class__
         query = deepcopy(self._q)
-        clone = klass(host=self._host, query=query, index=self._index)
+        clone = klass(self._host, query=query, index=self._index)
         clone._conn = self._conn
         return clone
 
