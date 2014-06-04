@@ -1,7 +1,10 @@
+### `0.6.1`
+
+* Fix broken syntax around `clone` method
+
 ### `0.6.0`
 
 * Add `missing` to DSL
-
 
 ### `0.5.1`
 
