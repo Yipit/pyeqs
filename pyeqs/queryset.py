@@ -27,8 +27,9 @@ class QuerySet(object):
         self._per_request = 10
 
     def _clone(self):
+        klass = self.__class__
         query = deepcopy(self._q)
-        clone = QuerySet(self._host, query=query, index=self._index)
+        clone = klass(self._host, query=query, index=self._index)
         clone._conn = self._conn
         return clone
 
