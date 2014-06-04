@@ -1,3 +1,7 @@
+### `0.6.2`
+
+* Force creation of clones as `QuerySet` objects
+
 ### `0.6.1`
 
 * Fix broken syntax around `clone` method
