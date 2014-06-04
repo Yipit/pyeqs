@@ -1,3 +1,7 @@
+### `0.6.3`
+
+* Revent cloning change
+
 ### `0.6.2`
 
 * Force creation of clones as `QuerySet` objects
@@ -22,7 +26,6 @@
 ### `0.4.0`
 
 * Add option to specify 'missing' when creating a sort block
-
 
 ### `0.3.3`
 
