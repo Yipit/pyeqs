@@ -15,11 +15,11 @@ default_doc_type = "my_doc_type"
 
 
 def homogeneous(a, b):
-    json.dumps(a).should.equal(json.dumps(b))
+    json.dumps(a, sort_keys=True).should.equal(json.dumps(b, sort_keys=True))
 
 
 def heterogeneous(a, b):
-    json.dumps(a).shouldnt.equal(json.dumps(b))
+    json.dumps(a, sort_keys=True).shouldnt.equal(json.dumps(b, sort_keys=True))
 
 
 def add_document(index, document, **kwargs):

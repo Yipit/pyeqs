@@ -5,6 +5,7 @@ import json
 from copy import deepcopy
 
 from elasticsearch import Elasticsearch
+from six import string_types
 from . import Filter, Bool, QueryBuilder
 
 
@@ -63,6 +64,9 @@ class QuerySet(object):
 
     def count(self):
         return self._count
+
+    def __next__(self):
+        return self.next()  # pragma: no cover
 
     def next(self):
         """
@@ -137,7 +141,7 @@ class QuerySet(object):
         return self._conn
 
     def _parse_host_connection_info(self, host):
-        if isinstance(host, (str, unicode)):
+        if isinstance(host, string_types):
             return [{"host": host}]
         if isinstance(host, dict):
             return [host]

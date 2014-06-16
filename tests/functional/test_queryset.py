@@ -167,7 +167,7 @@ def test_wrappers(context):
 
     # And I do a search
     def wrapper_function(search_results):
-        return map(lambda x: x['_source']['bar'] + 1, search_results)
+        return list(map(lambda x: x['_source']['bar'] + 1, search_results))
     t.wrappers(wrapper_function)
     t.order_by(Sort("bar", order="asc"))
     results = t[0:10]

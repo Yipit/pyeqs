@@ -138,16 +138,16 @@ def test_create_queryset_with_sorting():
 
     # Then I see the appropriate JSON
     results = {
+        "query": {
+            "match_all": {}
+        },
         "sort": [
             {
                 "_id": {
                     "order": "asc"
                 }
             }
-        ],
-        "query": {
-            "match_all": {}
-        }
+        ]
     }
 
     homogeneous(t._query, results)
@@ -204,10 +204,10 @@ def test_create_queryset_with_scoring():
     results = {
         "query": {
             "function_score": {
-                "query": {"match_all": {}},
                 "script_score": {
                     "script": "foo = 0.0"
                 },
+                "query": {"match_all": {}},
                 "boost_mode": "replace"
             }
         }
@@ -523,7 +523,7 @@ def test_queryset_getitem_with_wrapper():
     """
     # When I create a query block
     t = QuerySet("localhost", index="bar")
-    wrapper = lambda y: map(lambda x: x['_id'], y)
+    wrapper = lambda y: list(map(lambda x: x['_id'], y))
     t.wrappers(wrapper)
 
     # And I have records
@@ -565,7 +565,7 @@ def test_queryset_getitem_multiple():
     """
     # When I create a query block
     t = QuerySet("localhost", index="bar")
-    wrapper = lambda y: map(lambda x: x['_id'], y)
+    wrapper = lambda y: list(map(lambda x: x['_id'], y))
     t.wrappers(wrapper)
     # And I have a record
     response = {
@@ -610,7 +610,7 @@ def test_queryset_iteration():
 
     # When I create a query block
     t = QuerySet("foobar", index="bar")
-    wrapper = lambda y: map(lambda x: x['_id'], y)
+    wrapper = lambda y: list(map(lambda x: x['_id'], y))
     t.wrappers(wrapper)
 
     # And I have a record
@@ -655,7 +655,7 @@ def test_queryset_iteration_with_no_results():
 
     # When I create a query block
     t = QuerySet("foobar", index="bar")
-    wrapper = lambda y: map(lambda x: x['_id'], y)
+    wrapper = lambda y: list(map(lambda x: x['_id'], y))
     t.wrappers(wrapper)
 
     # And I have no records
@@ -686,7 +686,7 @@ def test_queryset_iteration_with_multiple_cache_fetches():
 
     # When I create a query block
     t = QuerySet("foobar", index="bar")
-    wrapper = lambda y: map(lambda x: x['_id'], y)
+    wrapper = lambda y: list(map(lambda x: x['_id'], y))
     t.wrappers(wrapper)
 
     # And we lower the per request to force multiple fetches

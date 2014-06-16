@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
 
+from six import string_types
+
 
 class GeoDistance(dict):
 
@@ -15,7 +17,7 @@ class GeoDistance(dict):
         GeoDistance("-70,40", '10km')
         """
         super(GeoDistance, self).__init__()
-        self.coordinates = self._parse_coordinates(coordinates)
+        self.coordinates = list(self._parse_coordinates(coordinates))
         self.distance = distance
         self.field_name = field_name
         self["geo_distance"] = self._build_dict()
@@ -36,7 +38,7 @@ class GeoDistance(dict):
             lon = coordinates[0]
         if isinstance(coordinates, dict):
             lat = coordinates.pop('lat')
-            lon = coordinates.values()[0]
-        if isinstance(coordinates, (str, unicode)):
+            lon = list(coordinates.values())[0]
+        if isinstance(coordinates, string_types):
             lat, lon = coordinates.split(",")
         return map(float, [lat, lon])

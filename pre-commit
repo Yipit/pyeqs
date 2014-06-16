@@ -174,11 +174,6 @@ CHECKS = [
             '* http://docs.python.org/release/3.0/whatsnew/3.0.html'
         )
     },
-    {
-        'output': 'Checking .travis.yml',
-        'command': 'travis-lint {file_name} | grep "is not a valid YAML"',
-        'match_files': ['\.travis\.yml'],
-    },
 ]
 
 modified = re.compile('^[MA]\s+(?P<name>.*)$')
