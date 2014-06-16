@@ -1,3 +1,7 @@
+### `0.7.0`
+
+* Add python 3 support
+
 ### `0.6.3`
 
 * Revent cloning change
