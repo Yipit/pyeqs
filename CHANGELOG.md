@@ -1,3 +1,8 @@
+### `0.7.2`
+
+* Add `QuerySet` to DSL
+
+
 ### `0.7.1`
 
 * Add `execution` option to Terms DSL
