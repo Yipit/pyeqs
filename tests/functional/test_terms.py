@@ -28,3 +28,24 @@ def test_terms_search(context):
 
     # Then I get a the expected results
     len(results).should.equal(3)
+
+
+@scenario(prepare_data, cleanup_data)
+def test_terms_search_with_execution(context):
+    """
+    Search with terms filter with execution
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"foo": ["foo", "bar"]})
+    add_document("foo", {"foo": ["foo", "baz"]})
+
+    # And I filter for terms
+    t.filter(Terms("foo", ["foo", "bar"], execution="and"))
+    results = t[0:10]
+
+    # Then I get a the expected results
+    len(results).should.equal(1)
+    results[0]["_source"]["foo"].should.equal(["foo", "bar"])
