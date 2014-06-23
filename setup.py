@@ -38,7 +38,6 @@ def parse_requirements():
 local_file = lambda f: \
     open(os.path.join(os.path.dirname(__file__), f)).readlines()
 
-#install_requires, dependency_links = parse_requirements()
 
 if __name__ == '__main__':
 
@@ -47,7 +46,7 @@ if __name__ == '__main__':
     setup(
         name="pyeqs",
         license="MIT",
-        version='0.7.0',
+        version='0.7.1',
         description=u'Django Querysets-esque implementation for Elasticsearch',
         author=u'Andrew Gross',
         author_email=u'andrew.w.gross@gmail.com',

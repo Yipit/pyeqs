@@ -1,3 +1,7 @@
+### `0.7.1`
+
+* Add `execution` option to Terms DSL
+
 ### `0.7.0`
 
 * Add python 3 support
