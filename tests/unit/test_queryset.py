@@ -6,7 +6,7 @@ import json
 import sure
 
 from pyeqs import QuerySet, Filter
-from pyeqs.dsl import Term, Sort, ScriptScore
+from pyeqs.dsl import Term, Sort, ScriptScore, QueryString
 from tests.helpers import homogeneous
 
 
@@ -20,6 +20,26 @@ def test_create_queryset():
     # Then I see the appropriate JSON
     results = {
         "query": {"match_all": {}}
+    }
+
+    homogeneous(t._query, results)
+
+
+def test_create_queryset_with_query_string():
+    """
+    Create QuerySet with QueryString
+    """
+    # When create a queryset
+    q = QueryString("foo")
+    t = QuerySet("foobar", query=q)
+
+    # Then I see the appropriate JSON
+    results = {
+        "query": {
+            "query_string": {
+                "query": "foo"
+            }
+        }
     }
 
     homogeneous(t._query, results)

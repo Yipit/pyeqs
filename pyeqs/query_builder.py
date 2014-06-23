@@ -3,7 +3,8 @@ from __future__ import unicode_literals, absolute_import
 
 from . import Filter
 from copy import deepcopy
-from pyeqs.dsl import MatchAll
+from six import string_types
+from pyeqs.dsl import MatchAll, QueryString
 
 
 class QueryBuilder(object):
@@ -26,8 +27,10 @@ class QueryBuilder(object):
         """
         Build the base query dictionary
         """
-        if self._query_string:
-            self._query_dsl = {"query_string": {"query": self._query_string}}
+        if isinstance(self._query_string, QueryString):
+            self._query_dsl = self._query_string
+        elif isinstance(self._query_string, string_types):
+            self._query_dsl = QueryString(self._query_string)
         else:
             self._query_dsl = MatchAll()
 
