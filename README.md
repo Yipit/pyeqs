@@ -18,7 +18,7 @@ pip install pyeqs
 
 ## Usage
 
-Check out the [API Reference](https://github.com/Yipit/pyeqs/blob/master/README.md) for examples.
+Check out the [API Reference](https://github.com/Yipit/pyeqs/blob/master/API_REFERENCE.md) for examples.
 
 ## Alternatives
 
