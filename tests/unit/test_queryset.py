@@ -236,6 +236,35 @@ def test_create_queryset_with_scoring():
     homogeneous(t._query, results)
 
 
+def test_create_queryset_with_scoring():
+    """
+    Create QuerySet with Scoring, Minimum Score and Track Scores
+    """
+    # When create a query block
+    t = QuerySet("foobar")
+
+    # And I add scoring
+    s = ScriptScore("foo = 0.0")
+    t.score(s, min_score=0, track_scores=True)
+
+    # Then I see the appropriate JSON
+    results = {
+        "min_score": 0,
+        "track_scores": True,
+        "query": {
+            "function_score": {
+                "script_score": {
+                    "script": "foo = 0.0"
+                },
+                "query": {"match_all": {}},
+                "boost_mode": "replace"
+            }
+        }
+    }
+
+    homogeneous(t._query, results)
+
+
 def test_create_queryset_with_multiple_scoring():
     """
     Create QuerySet with Multiple Scoring

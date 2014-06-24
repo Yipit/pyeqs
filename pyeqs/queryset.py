@@ -46,8 +46,8 @@ class QuerySet(object):
         self._q.filter(f, operator=operator)
         return self
 
-    def score(self, script_score, boost_mode="replace"):
-        self._q.score(script_score, boost_mode=boost_mode)
+    def score(self, script_score, boost_mode="replace", min_score=None, track_scores=False):
+        self._q.score(script_score, boost_mode=boost_mode, min_score=min_score, track_scores=track_scores)
         return self
 
     def only(self, fields):

@@ -18,6 +18,8 @@ class QueryBuilder(object):
         self._filter_dsl = None
         self._scored = False
         self._score_dsl = None
+        self._min_score = None
+        self._track_scores = False
         self._sorted = False
         self._sorting = None
         self._fields = []
@@ -67,7 +69,7 @@ class QueryBuilder(object):
         self._sorting.append(sorting)
         return self
 
-    def score(self, script_score, boost_mode="replace"):
+    def score(self, script_score, boost_mode="replace", min_score=None, track_scores=False):
         self._scored = True
         self._score_dsl = {
             "function_score": {
@@ -75,6 +77,10 @@ class QueryBuilder(object):
                 "boost_mode": boost_mode
             }
         }
+        if min_score is not None:
+            self._min_score = min_score
+        if track_scores:
+            self._track_scores = track_scores
         return self
 
     def fields(self, fields):
@@ -99,6 +105,10 @@ class QueryBuilder(object):
             scored_query = {
                 "query": self._score_dsl
             }
+            if self._min_score is not None:
+                scored_query["min_score"] = self._min_score
+            if self._track_scores:
+                scored_query["track_scores"] = self._track_scores
             scored_query["query"]["function_score"]["query"] = deepcopy(query["query"])
             query = scored_query
 

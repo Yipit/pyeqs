@@ -94,6 +94,30 @@ def test_search_with_filter_and_scoring(context):
 
 
 @scenario(prepare_data, cleanup_data)
+def test_search_with_scoring_min_score_and_track_scores(context):
+    """
+    Search with match_all query and scoring with min_score and track_scores
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz", "scoring_field": 1})
+    add_document("foo", {"bar": "baz", "scoring_field": 2})
+    add_document("foo", {"bar": "baz", "scoring_field": 3})
+
+    # And I do a search
+    score = ScriptScore("final_score = 0 + doc['scoring_field'].value;")
+    t.score(score, min_score=2, track_scores=True)
+    results = t[0:10]
+
+    # Then I get a the expected results
+    len(results).should.equal(2)
+    results[0]['_source'].should.equal({"bar": "baz", "scoring_field": 3})
+    results[1]['_source'].should.equal({"bar": "baz", "scoring_field": 2})
+
+
+@scenario(prepare_data, cleanup_data)
 def test_search_with_filter_and_scoring_and_sorting(context):
     """
     Search with match_all query, filter, scoring, and sorting
