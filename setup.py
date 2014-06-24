@@ -42,17 +42,19 @@ local_file = lambda f: \
 if __name__ == '__main__':
 
     packages = find_packages(exclude=['*tests*'])
+    pkgs, links = parse_requirements()
 
     setup(
         name="pyeqs",
         license="MIT",
-        version='0.7.2',
+        version='0.7.3',
         description=u'Django Querysets-esque implementation for Elasticsearch',
         author=u'Andrew Gross',
         author_email=u'andrew.w.gross@gmail.com',
         include_package_data=True,
         url='https://github.com/yipit/pyeqs',
         packages=packages,
+        install_requires=pkgs,
         classifiers=(
             'Development Status :: 3 - Alpha',
             'Intended Audience :: Developers',

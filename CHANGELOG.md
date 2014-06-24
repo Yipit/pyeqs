@@ -1,7 +1,10 @@
+### `0.7.3`
+
+* Add `min_score` and `track_scores` options to `score`.
+
 ### `0.7.2`
 
 * Add `QuerySet` to DSL
-
 
 ### `0.7.1`
 
