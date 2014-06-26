@@ -83,6 +83,20 @@ qs = QuerySet("127.0.0.1", index="my_index")
 qs.order_by(Sort("_id", order="desc"))
 ```
 
+#### Location Sorting
+
+Assuming a set of records with a `location` field mapped as a `geo_point`:
+
+```python
+from pyeqs import QuerySet
+from pyeqs.dsl import Sort
+qs = QuerySet("127.0.0.1", index="my_index")
+qs.order_by(Sort("location", location=[40.0, 74.5]))
+```
+
+The parameter passed to the `location` kwarg can be any format that elasticsearch accepts.
+
+
 #### Scoring
 
 ```python

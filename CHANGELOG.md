@@ -1,3 +1,7 @@
+### `0.7.4`
+
+* Add ability to sort on `location` fields.  See the API Reference for details.
+
 ### `0.7.3`
 
 * Add `min_score` and `track_scores` options to `score`.
