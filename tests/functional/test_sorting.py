@@ -128,3 +128,25 @@ def test_search_with_missing_sort(context):
     results[0]["_source"]["baz"].should.equal(1)
     results[1]["_source"]["baz"].should.equal(2)
     results[2]["_source"]["baz"].should.equal(None)
+
+
+@scenario(prepare_data, cleanup_data)
+def test_search_with_location_sort(context):
+    """
+    Search with location sort
+    """
+    # When create a query block
+    t = QuerySet("localhost", index="foo")
+
+    # And there are locaiton records
+    add_document("foo", {"baz": 1, "location": {"lat": 40.0, "lon": 70.0}})
+    add_document("foo", {"baz": 2, "location": {"lat": 40.0, "lon": 75.0}})
+
+    # And I add sorting
+    sort = Sort("location", order="asc", location=[71.0, 40.0])
+    t.order_by(sort)
+    results = t[0:10]
+
+    # Then my results have the proper sorting
+    results[0]["_source"]["baz"].should.equal(1)
+    results[1]["_source"]["baz"].should.equal(2)

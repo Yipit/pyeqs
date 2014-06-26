@@ -91,3 +91,21 @@ def test_add_sort_with_mode_and_missing():
     }
 
     homogeneous(t, results)
+
+
+def test_add_sort_with_value():
+    """
+    Create Sort Block with Value
+    """
+    # When add a Sort block
+    t = Sort("location", location=[1.23, 3.45])
+
+    # Then I see the appropriate JSON
+    results = {
+        "_geo_distance": {
+            "location": [1.23, 3.45],
+            "order": "asc"
+        }
+    }
+
+    homogeneous(t, results)
