@@ -224,9 +224,13 @@ def test_create_queryset_with_scoring():
     results = {
         "query": {
             "function_score": {
-                "script_score": {
-                    "script": "foo = 0.0"
-                },
+                "functions": [
+                    {
+                        "script_score": {
+                            "script": "foo = 0.0"
+                        }
+                    }
+                ],
                 "query": {"match_all": {}},
                 "boost_mode": "replace"
             }
@@ -253,9 +257,13 @@ def test_create_queryset_with_scoring():
         "track_scores": True,
         "query": {
             "function_score": {
-                "script_score": {
-                    "script": "foo = 0.0"
-                },
+                "functions": [
+                    {
+                        "script_score": {
+                            "script": "foo = 0.0"
+                        }
+                    }
+                ],
                 "query": {"match_all": {}},
                 "boost_mode": "replace"
             }
@@ -277,17 +285,32 @@ def test_create_queryset_with_multiple_scoring():
     t.score(s)
 
     # And I add more scoring
-    ss = ScriptScore("foo = 1.0")
-    t.score(ss)
+    boost = {
+        "boost_factor": "3",
+        "filter": Term("foo", "bar")
+    }
+    t.score(boost)
 
     # Then I see the appropriate JSON
     results = {
         "query": {
             "function_score": {
                 "query": {"match_all": {}},
-                "script_score": {
-                    "script": "foo = 1.0"
-                },
+                "functions": [
+                    {
+                        "script_score": {
+                            "script": "foo = 0.0"
+                        }
+                    },
+                    {
+                        "boost_factor": "3",
+                        "filter": {
+                            "term": {
+                                "foo": "bar"
+                            }
+                        }
+                    }
+                ],
                 "boost_mode": "replace"
             }
         }
@@ -328,9 +351,13 @@ def test_create_queryset_with_scoring_and_filtering():
                         }
                     }
                 },
-                "script_score": {
-                    "script": "foo = 0.0"
-                },
+                "functions": [
+                    {
+                        "script_score": {
+                            "script": "foo = 0.0"
+                        }
+                    }
+                ],
                 "boost_mode": "replace"
             }
         }
@@ -372,52 +399,13 @@ def test_create_queryset_with_scoring_and_filtering_from_object():
                         }
                     }
                 },
-                "script_score": {
-                    "script": "foo = 0.0"
-                },
-                "boost_mode": "replace"
-            }
-        }
-    }
-
-    homogeneous(t._query, results)
-
-
-def test_create_queryset_with_filtering_and_scoring():
-    """
-    Create QuerySet with Filtering and Scoring
-    """
-    # When create a query block
-    t = QuerySet("foobar")
-
-    # And I add filtering
-    t.filter(Term("foo", "bar"))
-
-    # And I add scoring
-    s = ScriptScore("foo = 0.0")
-    t.score(s)
-
-    # Then I see the appropriate JSON
-    results = {
-        "query": {
-            "function_score": {
-                "query": {
-                    "filtered": {
-                        "query": {"match_all": {}},
-                        "filter": {
-                            "and": [
-                                {
-                                    "term": {
-                                        "foo": "bar"
-                                    }
-                                }
-                            ]
+                "functions": [
+                    {
+                        "script_score": {
+                            "script": "foo = 0.0"
                         }
                     }
-                },
-                "script_score": {
-                    "script": "foo = 0.0"
-                },
+                ],
                 "boost_mode": "replace"
             }
         }
@@ -466,9 +454,13 @@ def test_create_queryset_with_filters_and_scoring():
                         }
                     }
                 },
-                "script_score": {
-                    "script": "foo = 0.0"
-                },
+                "functions": [
+                    {
+                        "script_score": {
+                            "script": "foo = 0.0"
+                        }
+                    }
+                ],
                 "boost_mode": "replace"
             }
         }

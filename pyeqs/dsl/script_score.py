@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
 
+
 class ScriptScore(dict):
 
     def __init__(self, script, params=None, lang=None):
