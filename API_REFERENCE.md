@@ -99,11 +99,24 @@ The parameter passed to the `location` kwarg can be any format that elasticsearc
 
 #### Scoring
 
+Single Scoring Functions
+
 ```python
 from pyeqs import QuerySet
 from pyeqs.dsl import ScriptScore
 qs = QuerySet("127.0.0.1", index="my_index")
 qs.score(ScriptScore("score = foo + bar;", lang="mvel", params={"bar": 1}))
+```
+
+Multiple Scoring Functions
+
+
+```python
+from pyeqs import QuerySet
+from pyeqs.dsl import ScriptScore
+qs = QuerySet("127.0.0.1", index="my_index")
+qs.score(ScriptScore("score = foo + bar;", lang="mvel", params={"bar": 1}))
+qs.score({"boost": 10, "filter": {"term": {"foo": "bar"}}})
 ```
 
 #### Wrapping Results

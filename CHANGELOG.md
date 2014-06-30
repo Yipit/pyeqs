@@ -1,3 +1,8 @@
+### `0.8.0`
+
+* Add Exists Block
+* Update `function_score` to support multiple scoring blocks.
+
 ### `0.7.4`
 
 * Add ability to sort on `location` fields.  See the API Reference for details.
