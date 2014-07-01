@@ -1,3 +1,7 @@
+### `0.8.1`
+
+* Add `score_mode` kwarg to scoring blocks.
+
 ### `0.8.0`
 
 * Add Exists Block
