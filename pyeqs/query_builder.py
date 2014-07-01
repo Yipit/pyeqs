@@ -69,13 +69,14 @@ class QueryBuilder(object):
         self._sorting.append(sorting)
         return self
 
-    def score(self, scoring_block, boost_mode="replace", min_score=None, track_scores=False):
+    def score(self, scoring_block, boost_mode="replace", score_mode="multiply", min_score=None, track_scores=False):
         if not self._scored:
             self._scored = True
             self._score_dsl = {
                 "function_score": {
                     "functions": [],
-                    "boost_mode": boost_mode
+                    "boost_mode": boost_mode,
+                    "score_mode": score_mode
                 }
             }
         if isinstance(scoring_block, ScriptScore):

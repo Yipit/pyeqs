@@ -232,7 +232,8 @@ def test_create_queryset_with_scoring():
                     }
                 ],
                 "query": {"match_all": {}},
-                "boost_mode": "replace"
+                "boost_mode": "replace",
+                "score_mode": "multiply"
             }
         }
     }
@@ -265,7 +266,8 @@ def test_create_queryset_with_scoring():
                     }
                 ],
                 "query": {"match_all": {}},
-                "boost_mode": "replace"
+                "boost_mode": "replace",
+                "score_mode": "multiply"
             }
         }
     }
@@ -311,7 +313,8 @@ def test_create_queryset_with_multiple_scoring():
                         }
                     }
                 ],
-                "boost_mode": "replace"
+                "boost_mode": "replace",
+                "score_mode": "multiply"
             }
         }
     }
@@ -358,7 +361,8 @@ def test_create_queryset_with_scoring_and_filtering():
                         }
                     }
                 ],
-                "boost_mode": "replace"
+                "boost_mode": "replace",
+                "score_mode": "multiply"
             }
         }
     }
@@ -406,7 +410,8 @@ def test_create_queryset_with_scoring_and_filtering_from_object():
                         }
                     }
                 ],
-                "boost_mode": "replace"
+                "boost_mode": "replace",
+                "score_mode": "multiply"
             }
         }
     }
@@ -461,7 +466,8 @@ def test_create_queryset_with_filters_and_scoring():
                         }
                     }
                 ],
-                "boost_mode": "replace"
+                "boost_mode": "replace",
+                "score_mode": "multiply"
             }
         }
     }
