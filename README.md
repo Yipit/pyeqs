@@ -33,5 +33,5 @@ Check out the [API Reference](https://github.com/Yipit/pyeqs/blob/master/API_REF
 #### Haskell
 * [Bloodhound](https://github.com/bitemyapp/bloodhound/): A basic Elasticsearch Client that also has the ability to leverage the language's built-in operators to construct queries.
 
-### Perl
+#### Perl
 * [ElasticSearch::SearchBuilder](https://metacpan.org/pod/ElasticSearch::SearchBuilder): An Elasticsearch Client to help with constructing complex queries and filters.
