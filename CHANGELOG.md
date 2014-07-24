@@ -1,3 +1,7 @@
+### `0.8.2`
+
+* Add `post_query_actions` to provide hooks for logging and debugging inside the iterator.
+
 ### `0.8.1`
 
 * Add `score_mode` kwarg to scoring blocks.

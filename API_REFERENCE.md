@@ -121,13 +121,55 @@ qs.score({"boost": 10, "filter": {"term": {"foo": "bar"}}})
 
 #### Wrapping Results
 
+PyEQS allows you to transform the JSON results returned from Elasticsearch.  This can be used to extract source fields, serialize objects, and perform additional cleanup inside the iterator abstraction.
+
+Wrapper functions have a simple interface.  They should expect a list of results from Elasticsearch (`["hits"]["hits"]`) where each element is the dictionary representation of a record.
+
+```python
+def id_wrapper(results):
+    return map(lambda x: x['_id'], results)
+```
+
+You can have multiple wrappers on a PyEQS object, and they will be applied in the order they were applied to the queryset.  Each wrapper will act on the output of the previous wrapper.  The wrappers are stored in an array in `self._wrappers` if additional manipulation is required.
+
+```python
+def int_wrapper(results):
+    return map(int, results)
+```
+
 ```python
 from pyeqs import QuerySet
 from pyeqs.dsl import Term
+from wrappers import id_wrapper, int_wrapper
 qs = QuerySet("127.0.0.1", index="my_index")
-qs.filter(Term("foo", 1)
-qs.wrapper(lambda x: x['_id'])
+qs.filter(Term("foo", 1))
+qs.wrapper(id_wrapper)
+qs.wrapper(int_wrapper)
 ```
+
+#### Running Post Query Actions
+
+Post Query Actions are functions you can pass to PyEQS that can interact with all of the JSON returned from Elasticsearch (not just the hits).  These functions should expect a simple method signature:
+
+```python
+def simple_action(self, raw_results, start, stop)
+    logger("Query Time: {}".format(raw_results['took']))
+    logger("Cache Size: {}".format(len(self._cache))
+    logger("Request Page Start: {}".format(start))
+    logger("Request Page Sop: {}".format(stop))
+```
+
+Do not `post_query_actions` to modify the returned results (use wrappers).  Instead, use it to attach logging and debugging info to your requests.
+
+```python
+from pyeqs import QuerySet
+from pyeqs.dsl import Term
+from actions import simple_action
+qs = QuerySet("127.0.0.1", index="my_index")
+qs.filter(Term("foo", 1))
+qs.post_query_actions(simple_action)
+```
+
 
 #### Limiting Returned Fields
 
