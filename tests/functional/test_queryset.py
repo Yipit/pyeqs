@@ -258,3 +258,38 @@ def test_search_with_iterator(context):
 
     len(t).should.equal(5)
     t.count().should.equal(5)
+
+
+@scenario(prepare_data, cleanup_data)
+def test_post_query_actions(context):
+    """
+    Search with match_all query with post query actions
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": 1})
+    add_document("foo", {"bar": 2})
+    add_document("foo", {"bar": 3})
+
+    # And I have a post query action
+    global my_global_var
+    my_global_var = 1
+
+    def action(self, results, start, stop):
+        global my_global_var
+        my_global_var += 1
+
+    t.post_query_actions(action)
+
+    # And I do a search
+    t.order_by(Sort("bar", order="asc"))
+    results = t[0:10]
+
+    # Then I get a the expected results
+    len(results).should.equal(3)
+    results[0]["_source"]["bar"].should.equal(1)
+    results[1]["_source"]["bar"].should.equal(2)
+    results[2]["_source"]["bar"].should.equal(3)
+    my_global_var.should.equal(2)

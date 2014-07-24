@@ -19,6 +19,7 @@ class QuerySet(object):
         else:
             self._q = QueryBuilder(query_string=query)
         self._wrappers = []
+        self._post_query_actions = []
         self._count = None
         self._conn = None
         self._finalized_query = None
@@ -60,6 +61,10 @@ class QuerySet(object):
 
     def wrappers(self, wrapper):
         self._wrappers.append(wrapper)
+        return self
+
+    def post_query_actions(self, action):
+        self._post_query_actions.append(action)
         return self
 
     def count(self):
@@ -111,7 +116,10 @@ class QuerySet(object):
         """
         start = val.start
         end = val.stop
-        results = self._search(start, end)
+        raw_results = self._search(start, end)
+        for action in self._post_query_actions:
+            action(self, raw_results, start, end)
+        results = raw_results["hits"]["hits"]
         for wrapper in self._wrappers:
             results = wrapper(results)
         return results
@@ -121,7 +129,7 @@ class QuerySet(object):
         pagination_kwargs = self._get_pagination_kwargs(start, end)
         raw_results = conn.search(index=self._index, body=self._query, **pagination_kwargs)
         self._count = self._get_result_count(raw_results)
-        return raw_results["hits"]["hits"]
+        return raw_results
 
     def _get_result_count(self, results):
         return int(results["hits"]["total"])

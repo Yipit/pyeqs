@@ -34,12 +34,13 @@ def clean_elasticsearch(context):
 def prepare_elasticsearch(context):
     clean_elasticsearch(context)
     _create_foo_index()
-    conn.cluster.health(wait_for_status='yellow')
+    conn.cluster.health(wait_for_status='yellow', index=index_name)
 
 
 def _create_foo_index():
     mapping = _get_mapping(index=index_name)
     conn.indices.create(index=index_name, ignore=400, body=mapping)
+    conn.indices.refresh(index=index_name)
 
 
 def _delete_es_index(index):

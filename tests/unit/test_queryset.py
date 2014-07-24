@@ -810,3 +810,62 @@ def test_queryset_iteration_with_multiple_cache_fetches():
     results[0].should.equal("1")
     results[1].should.equal("2")
     results[2].should.equal("3")
+
+
+@httpretty.activate
+def test_queryset_getitem_with_post_query_action():
+    """
+    Fetch from QuerySet with __getitem__ and post query action
+    """
+    # When I create a query block
+    t = QuerySet("localhost", index="bar")
+
+    # And I have a post query action
+    global my_global_var
+    my_global_var = 1
+
+    def action(self, results, start, stop):
+        global my_global_var
+        my_global_var += 1
+
+    t.post_query_actions(action)
+
+    # And I have records
+    response = {
+        "took": 12,
+        "timed_out": False,
+        "_shards": {
+            "total": 5,
+            "successful": 5,
+            "failed": 0
+        },
+        "hits": {
+            "total": 1,
+            "max_score": 10,
+            "hits": [
+                {
+                    "_index": "bar",
+                    "_type": "baz",
+                    "_id": "1",
+                    "_score": 10,
+                    "_source": {
+                        "foo": "bar"
+                    },
+                    "sort": [
+                        1395687078000
+                    ]
+                }
+            ]
+        }
+    }
+    httpretty.register_uri(httpretty.GET, "http://localhost:9200/bar/_search",
+                       body=json.dumps(response),
+                       content_type="application/json")
+
+    results = t[0:1]
+    len(results).should.equal(1)
+    t.count().should.equal(1)
+
+    # Then I see the correct results
+    results[0]['_id'].should.equal('1')
+    my_global_var.should.equal(2)
