@@ -23,6 +23,8 @@ class QueryBuilder(object):
         self._sorted = False
         self._sorting = None
         self._fields = []
+        self._aggregated = False
+        self._aggregation_dsl = None
         self._build_query()
 
     def _build_query(self):
@@ -89,6 +91,17 @@ class QueryBuilder(object):
             self._track_scores = track_scores
         return self
 
+    def _build_aggregation_query(self, aggregation):
+        self._aggregated = True
+        return aggregation
+
+    def aggregate(self, aggregation):
+        if self._aggregated:
+            self._aggregation_dsl.update(aggregation)
+        else:
+            self._aggregation_dsl = self._build_aggregation_query(aggregation)
+        return self
+
     def fields(self, fields):
         self._fields.append(fields)
 
@@ -123,4 +136,8 @@ class QueryBuilder(object):
 
         if self._fields:
             query["fields"] = self._fields
+
+        if self._aggregated:
+            query["aggregations"] = self._aggregation_dsl
+
         return query
