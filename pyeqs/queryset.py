@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, absolute_import
 
-import json
 from copy import deepcopy
 
 from elasticsearch import Elasticsearch
 from six import string_types
-from . import Filter, Bool, QueryBuilder
+from . import QueryBuilder
 
 
 class QuerySet(object):
@@ -23,6 +22,7 @@ class QuerySet(object):
         self._count = None
         self._conn = None
         self._finalized_query = None
+        self._aggregations = None
         # Caching
         self._cache = None
         self._retrieved = 0
@@ -69,6 +69,13 @@ class QuerySet(object):
 
     def count(self):
         return self._count
+
+    def aggregations(self):
+        return self._aggregations
+
+    def aggregate(self, aggregation):
+        self._q.aggregate(aggregation)
+        return self
 
     def __next__(self):
         return self.next()  # pragma: no cover
@@ -122,6 +129,8 @@ class QuerySet(object):
         results = raw_results["hits"]["hits"]
         for wrapper in self._wrappers:
             results = wrapper(results)
+        if raw_results.get('aggregations'):
+            self._aggregations = raw_results.pop('aggregations')
         return results
 
     def _search(self, start, end):

@@ -3,10 +3,9 @@ from __future__ import unicode_literals
 
 import httpretty
 import json
-import sure
 
 from pyeqs import QuerySet, Filter
-from pyeqs.dsl import Term, Sort, ScriptScore, QueryString
+from pyeqs.dsl import Aggregations, QueryString, ScriptScore, Sort, Term
 from tests.helpers import homogeneous
 
 
@@ -241,7 +240,7 @@ def test_create_queryset_with_scoring():
     homogeneous(t._query, results)
 
 
-def test_create_queryset_with_scoring():
+def test_create_queryset_with_scoring_min_score_track_score():
     """
     Create QuerySet with Scoring, Minimum Score and Track Scores
     """
@@ -521,6 +520,43 @@ def test_queryset_string():
         }
     }
 
+    homogeneous(t._query, results)
+
+
+def test_create_queryset_with_aggregation():
+    """
+    Create QuerySet with an Aggregation
+    """
+    # When I create a query block
+    t = QuerySet("foobar")
+
+    # And I aggregate
+    a = Aggregations("agg_name", "field_name", "metric")
+    t.aggregate(a)
+
+    results = {
+        "query": {
+            "match_all": {}
+        },
+        "aggregations": {
+            "agg_name": {"metric": {"field": "field_name"}}
+        }
+    }
+    homogeneous(t._query, results)
+
+    # And I can do it as many times as I want
+    a1 = Aggregations("other_agg_name", "other_field_name", "other_metric")
+    t.aggregate(a1)
+
+    results = {
+        "query": {
+            "match_all": {}
+        },
+        "aggregations": {
+            "agg_name": {"metric": {"field": "field_name"}},
+            "other_agg_name": {"other_metric": {"field": "other_field_name"}}
+        }
+    }
     homogeneous(t._query, results)
 
 
@@ -869,3 +905,46 @@ def test_queryset_getitem_with_post_query_action():
     # Then I see the correct results
     results[0]['_id'].should.equal('1')
     my_global_var.should.equal(2)
+
+
+@httpretty.activate
+def test_queryset_aggregations():
+    """
+    Fetch aggregation data from QuerySet with #aggregations
+    """
+    # When I create a query block
+    t = QuerySet("localhost", index="bar")
+
+    # And I aggregate something
+    a = Aggregations("agg_name", "field_name", "metric")
+    t.aggregate(a)
+
+    # And I have records
+    response = {
+        "took": 12,
+        "hits": {
+            "total": 1,
+            "max_score": 10,
+            "hits": [
+                {"_index": "bar",
+                 "_type": "baz",
+                 "_id": "1",
+                 "_score": 10,
+                 "_source": {
+                     "foo": "bar"
+                 },
+                 "sort": [
+                     1395687078000
+                 ]}
+            ]
+        },
+        "aggregations": {
+            "agg_name": {"metric": {"field": "field_name"}}
+        }
+    }
+    httpretty.register_uri(httpretty.GET, "http://localhost:9200/bar/_search",
+                           body=json.dumps(response),
+                           content_type="application/json")
+
+    t[0:1]
+    t.aggregations().should.have.key("agg_name").being.equal({"metric": {"field": "field_name"}})
