@@ -129,8 +129,7 @@ class QuerySet(object):
         results = raw_results["hits"]["hits"]
         for wrapper in self._wrappers:
             results = wrapper(results)
-        if raw_results.get('aggregations'):
-            self._aggregations = raw_results.pop('aggregations')
+        self._aggregations = raw_results.get('aggregations', None)
         return results
 
     def _search(self, start, end):
