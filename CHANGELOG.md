@@ -1,6 +1,6 @@
 ### `0.10.0`
 
-* Add `aggregations` functionality
+* Add `aggregations` functionality. Special thanks to @zkourouma for the hard work.
 
 ### `0.9.0`
 
