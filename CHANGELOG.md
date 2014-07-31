@@ -1,3 +1,7 @@
+### `0.10.1`
+
+* Fixing python 2.6 compat in aggregations
+
 ### `0.10.0`
 
 * Add `aggregations` functionality. Special thanks to @zkourouma for the hard work.
