@@ -27,7 +27,7 @@ class Aggregations(dict):
             self[self.agg_name] = {self.metric: {"field": self.field_name}}
         if self.range_list:
             if not self.range_name:
-                range_name = "{}_ranges".format(self.field_name)
+                range_name = "{name}_ranges".format(name=self.field_name)
             else:
                 range_name = self.range_name
             self[range_name] = {"range": {
@@ -53,7 +53,7 @@ class Aggregations(dict):
             "nested": {"path": self.nested_path},
             "aggregations": {
                 self.agg_name: {
-                    self.metric: {"field": "{}.{}".format(self.nested_path, self.field_name)}
+                    self.metric: {"field": "{path}.{name}".format(path=self.nested_path, name=self.field_name)}
                 }}
         }
 
