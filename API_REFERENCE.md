@@ -226,3 +226,15 @@ qs.count()   # None, since we haven't queried
 qs[0:10]
 qs.count()   # Returns number of hits
 ```
+
+#### Calculating Aggregations
+
+```python
+from pyeqs import QuerySet
+from pyeqs.dsl import Aggregations
+qs = QuerySet("127.0.0.1", index="my_index")
+qs.aggregate(Aggregations(agg_name="foo", field_name="bar", metric="stats"))
+qs.aggregations()   # None, since we haven't queried
+qs[0:10]
+qs.aggregations()   # Returns the aggregation data requested
+```

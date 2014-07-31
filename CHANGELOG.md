@@ -1,3 +1,7 @@
+### `0.10.0`
+
+* Add `Aggregations` to DSL
+
 ### `0.9.0`
 
 * Properly increment version number for SemVer.
