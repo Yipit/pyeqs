@@ -1,6 +1,6 @@
 ### `0.10.0`
 
-* Add `Aggregations` to DSL
+* Add `aggregations` functionality
 
 ### `0.9.0`
 
