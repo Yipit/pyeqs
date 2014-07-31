@@ -137,5 +137,5 @@ class QueryBuilder(object):
         if self._fields:
             query["fields"] = self._fields
         if self._aggregated:
-            query = {'query': query.pop('query'), 'aggregations': self._aggregation_dsl}
+            query["aggregations"] = self._aggregation_dsl
         return query
