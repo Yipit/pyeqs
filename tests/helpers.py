@@ -4,8 +4,7 @@ from __future__ import unicode_literals
 import json
 
 from elasticsearch import (
-        Elasticsearch,
-        TransportError
+    Elasticsearch
 )
 
 ELASTICSEARCH_URL = "localhost"
@@ -59,6 +58,9 @@ def _get_mapping(index, **kwargs):
                     },
                     "foo_loc": {
                         "type": "geo_point"
+                    },
+                    "child": {
+                        "type": "nested"
                     }
                 }
             }
