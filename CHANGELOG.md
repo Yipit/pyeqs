@@ -1,3 +1,7 @@
+### `0.11.0`
+
+* Add `size` parameter to `Terms()` aggregations
+
 ### `0.10.1`
 
 * Fixing python 2.6 compat in aggregations
