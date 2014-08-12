@@ -4,13 +4,14 @@ from __future__ import unicode_literals, absolute_import
 
 class Aggregations(dict):
 
-    def __init__(self, agg_name, field_name, metric, filter_val=None, filter_name=None,
+    def __init__(self, agg_name, field_name, metric, size=0, filter_val=None, filter_name=None,
                  global_name=None, nested_path=None, range_list=None, range_name=None,
                  histogram_interval=None):
         super(Aggregations, self).__init__()
         self.agg_name = agg_name
         self.field_name = field_name
         self.metric = metric
+        self.size = size
         self.filter_val = filter_val
         self.filter_name = filter_name
         self.global_name = global_name
@@ -25,6 +26,9 @@ class Aggregations(dict):
             self[self.nested_path] = self._nesting()
         else:
             self[self.agg_name] = {self.metric: {"field": self.field_name}}
+            if self.metric == "terms":
+                self[self.agg_name][self.metric].update({"size": self.size})
+
         if self.range_list:
             if not self.range_name:
                 range_name = "{name}_ranges".format(name=self.field_name)
@@ -49,13 +53,16 @@ class Aggregations(dict):
             self[self.global_name]['aggregations'][self.agg_name] = self.pop(self.agg_name)
 
     def _nesting(self):
-        return {
+        nesting = {
             "nested": {"path": self.nested_path},
             "aggregations": {
                 self.agg_name: {
                     self.metric: {"field": "{path}.{name}".format(path=self.nested_path, name=self.field_name)}
                 }}
         }
+        if self.metric == "terms":
+            nesting["aggregations"][self.agg_name][self.metric].update({"size": self.size})
+        return nesting
 
     def _ranging(self):
         """
