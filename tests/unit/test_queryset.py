@@ -545,7 +545,7 @@ def test_create_queryset_with_aggregation():
     homogeneous(t._query, results)
 
     # And I can do it as many times as I want
-    a1 = Aggregations("other_agg_name", "other_field_name", "other_metric")
+    a1 = Aggregations("other_agg_name", "other_field_name", "terms", size=1)
     t.aggregate(a1)
 
     results = {
@@ -554,7 +554,10 @@ def test_create_queryset_with_aggregation():
         },
         "aggregations": {
             "agg_name": {"metric": {"field": "field_name"}},
-            "other_agg_name": {"other_metric": {"field": "other_field_name"}}
+            "other_agg_name": {"terms": {
+                "field": "other_field_name",
+                "size": 1
+            }}
         }
     }
     homogeneous(t._query, results)

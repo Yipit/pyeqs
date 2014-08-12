@@ -31,6 +31,30 @@ def test_search_aggregation(context):
 
 
 @scenario(prepare_data, cleanup_data)
+def test_search_aggregation_with_size(context):
+    """
+    Search with aggregation w/ specified size
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbar"})
+
+    # And I do an aggregated search
+    t.aggregate(aggregation=Aggregations("foo_attrs", "bar", "terms", size=1))
+    t[0:10]
+
+    # Then I get a the expected results
+    t.aggregations().should.have.key('foo_attrs')
+    t.aggregations()['foo_attrs'].should.have.key("buckets").being.equal([
+        {u'key': u'baz', u'doc_count': 2}])
+
+
+@scenario(prepare_data, cleanup_data)
 def test_search_multi_aggregations(context):
     """
     Search with multiple aggregations
@@ -73,6 +97,34 @@ def test_search_nested_aggregations(context):
 
     # The I get the expected results
     t.aggregations().should.have.key("child").being.equal({'best_bazbaz': {'value': 10.0}, 'doc_count': 2})
+
+
+@scenario(prepare_data, cleanup_data)
+def test_search_nested_terms_aggregations_with_size(context):
+    """
+    Search with nested terms aggregation and a specified size
+    """
+    # When create a query block
+    t = QuerySet("localhost", index="foo")
+
+    # And there are nested records
+    add_document("foo", {"child": [{"stuff": "yep", "bazbaz": "type0"}], "foo": "foo"})
+    add_document("foo", {"child": [{"stuff": "yep", "bazbaz": "type0"}], "foo": "foo"})
+    add_document("foo", {"child": [{"stuff": "nope", "bazbaz": "type1"}], "foo": "foofoo"})
+    add_document("foo", {"child": [{"stuff": "nope", "bazbaz": "type2"}], "foo": "foofoo"})
+
+    # And I do a nested
+    t.aggregate(aggregation=Aggregations("baz_types", "bazbaz", "terms",
+                                         nested_path="child", size=1))
+    t[0:10]
+
+    # The I get the expected results
+    t.aggregations().should.have.key("child").being.equal({
+        u'baz_types': {
+            u'buckets': [{u'doc_count': 2, u'key': u'type0'}]
+        },
+        u'doc_count': 4
+    })
 
 
 @scenario(prepare_data, cleanup_data)

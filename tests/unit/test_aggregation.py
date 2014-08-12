@@ -23,6 +23,23 @@ def test_add_agg():
     json.dumps(t).should.equal(json.dumps(results))
 
 
+def test_add_agg_with_size():
+    """
+    Create aggregations block specifying size
+    """
+    # When add a terms agg block w/ size
+    t = Aggregations("agg_name", "field_name", "terms", size=1)
+
+    # Then I see correct json
+    results = {
+        "agg_name": {
+            "terms": {"field": "field_name", "size": 1}
+        }
+    }
+
+    json.dumps(t).should.equal(json.dumps(results))
+
+
 def test_add_agg_nested():
     """
     Create nested aggregations block
@@ -35,7 +52,31 @@ def test_add_agg_nested():
         "nested_doc": {
             "nested": {"path": "nested_doc"},
             "aggregations": {
-                "agg_name": {"metric": {"field": "nested_doc.field_name"}}
+                "agg_name": {"metric": {"field": "nested_doc.field_name"}},
+            }
+        }
+    }
+
+    json.dumps(t).should.equal(json.dumps(results))
+
+
+def test_add_agg_nested_with_size():
+    """
+    Create nested aggregations block specifying size
+    """
+    # When add a nested_path with terms agg block w/ size
+    t = Aggregations("agg_name", "field_name", "terms", size=1,
+                     nested_path="nested_doc")
+
+    # The I see correct json
+    results = {
+        "nested_doc": {
+            "nested": {"path": "nested_doc"},
+            "aggregations": {
+                "agg_name": {"terms": {
+                    "field": "nested_doc.field_name",
+                    "size": 1
+                }}
             }
         }
     }
