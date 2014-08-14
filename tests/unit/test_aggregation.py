@@ -287,7 +287,55 @@ def test_add_agg_histogram():
         "agg_name": {
             "histogram": {
                 "field": "field_name",
-                "interval": 20
+                "interval": 20,
+                "order": {"_key": "desc"},
+                "min_doc_count": 1
+            }
+        }
+    }
+
+    json.dumps(t).should.equal(json.dumps(results))
+
+
+def test_add_agg_histogram_with_order():
+    """
+    Create an aggregations block w/ histogram intervals and order type/direction
+    """
+    # Whan add an agg block w/ interval
+    t = Aggregations("agg_name", "field_name", "metric", histogram_interval=20,
+                     order_type="_count", order_dir="asc")
+
+    # Then I see correct json
+    results = {
+        "agg_name": {
+            "histogram": {
+                "field": "field_name",
+                "interval": 20,
+                "order": {"_count": "asc"},
+                "min_doc_count": 1
+            }
+        }
+    }
+
+    json.dumps(t).should.equal(json.dumps(results))
+
+
+def test_add_agg_histogram_with_min_doc_count():
+    """
+    Create an aggregations block w/ histogram intervals and min_doc_count
+    """
+    # Whan add an agg block w/ interval
+    t = Aggregations("agg_name", "field_name", "metric", histogram_interval=20,
+                     min_doc_count=10)
+
+    # Then I see correct json
+    results = {
+        "agg_name": {
+            "histogram": {
+                "field": "field_name",
+                "interval": 20,
+                "order": {"_key": "desc"},
+                "min_doc_count": 10
             }
         }
     }

@@ -5,7 +5,7 @@ from __future__ import unicode_literals, absolute_import
 class Aggregations(dict):
 
     def __init__(self, agg_name, field_name, metric, size=0, min_doc_count=1,
-                 order_type="_count", order_dir="desc", filter_val=None, filter_name=None,
+                 order_type=None, order_dir="desc", filter_val=None, filter_name=None,
                  global_name=None, nested_path=None, range_list=None, range_name=None,
                  histogram_interval=None):
         super(Aggregations, self).__init__()
@@ -31,6 +31,7 @@ class Aggregations(dict):
         else:
             self[self.agg_name] = {self.metric: {"field": self.field_name}}
             if self.metric == "terms":
+                self.order_type = self.order_type if self.order_type else "_count"
                 self[self.agg_name][self.metric].update({
                     "size": self.size,
                     "order": {self.order_type: self.order_dir},
@@ -48,9 +49,12 @@ class Aggregations(dict):
             }}
             self.pop(self.agg_name)
         if self.interval:
+            self.order_type = self.order_type if self.order_type else "_key"
             self[self.agg_name]["histogram"] = {
                 "field": self.field_name,
-                "interval": self.interval
+                "interval": self.interval,
+                "order": {self.order_type: self.order_dir},
+                "min_doc_count": self.min_doc_count
             }
             self[self.agg_name].pop(self.metric)
         elif self.filter_val and self.filter_name:
@@ -69,6 +73,7 @@ class Aggregations(dict):
                 }}
         }
         if self.metric == "terms":
+            self.order_type = self.order_type if self.order_type else "_count"
             nesting["aggregations"][self.agg_name][self.metric].update({
                 "size": self.size,
                 "order": {self.order_type: self.order_dir},
