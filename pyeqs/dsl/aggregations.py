@@ -14,7 +14,7 @@ class Aggregations(dict):
         self.metric = metric
         self.size = size
         self.min_doc_count = min_doc_count
-        self.order_type = order_type
+        self.order_type = self._pick_order_type(order_type, histogram_interval)
         self.order_dir = order_dir
         self.filter_val = filter_val
         self.filter_name = filter_name
@@ -31,7 +31,6 @@ class Aggregations(dict):
         else:
             self[self.agg_name] = {self.metric: {"field": self.field_name}}
             if self.metric == "terms":
-                self.order_type = self.order_type if self.order_type else "_count"
                 self[self.agg_name][self.metric].update({
                     "size": self.size,
                     "order": {self.order_type: self.order_dir},
@@ -49,7 +48,6 @@ class Aggregations(dict):
             }}
             self.pop(self.agg_name)
         if self.interval:
-            self.order_type = self.order_type if self.order_type else "_key"
             self[self.agg_name]["histogram"] = {
                 "field": self.field_name,
                 "interval": self.interval,
@@ -73,7 +71,6 @@ class Aggregations(dict):
                 }}
         }
         if self.metric == "terms":
-            self.order_type = self.order_type if self.order_type else "_count"
             nesting["aggregations"][self.agg_name][self.metric].update({
                 "size": self.size,
                 "order": {self.order_type: self.order_dir},
@@ -96,3 +93,11 @@ class Aggregations(dict):
             if i + 1 == len(self.range_list):
                 agg_ranges.append({"from": val})
         return agg_ranges
+
+    def _pick_order_type(self, order_type, hist):
+        if order_type:
+            return order_type
+        elif hist:
+            return "_key"
+        else:
+            return "_count"
