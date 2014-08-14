@@ -33,7 +33,56 @@ def test_add_agg_with_size():
     # Then I see correct json
     results = {
         "agg_name": {
-            "terms": {"field": "field_name", "size": 1}
+            "terms": {
+                "field": "field_name",
+                "order": {"_count": "desc"},
+                "min_doc_count": 1,
+                "size": 1
+            }
+        }
+    }
+
+    json.dumps(t).should.equal(json.dumps(results))
+
+
+def test_add_agg_with_order():
+    """
+    Create aggregations block specifying order type and direction
+    """
+    # When add a terms agg block w/ size
+    t = Aggregations("agg_name", "field_name", "terms", order_type="_term", order_dir="asc")
+
+    # Then I see correct json
+    results = {
+        "agg_name": {
+            "terms": {
+                "field": "field_name",
+                "order": {"_term": "asc"},
+                "min_doc_count": 1,
+                "size": 0
+            }
+        }
+    }
+
+    json.dumps(t).should.equal(json.dumps(results))
+
+
+def test_add_agg_with_min_doc_count():
+    """
+    Create aggregations block specifying the min_doc_count
+    """
+    # When add a terms agg block w/ size
+    t = Aggregations("agg_name", "field_name", "terms", min_doc_count=10)
+
+    # Then I see correct json
+    results = {
+        "agg_name": {
+            "terms": {
+                "field": "field_name",
+                "order": {"_count": "desc"},
+                "min_doc_count": 10,
+                "size": 0
+            }
         }
     }
 
@@ -75,7 +124,61 @@ def test_add_agg_nested_with_size():
             "aggregations": {
                 "agg_name": {"terms": {
                     "field": "nested_doc.field_name",
+                    "order": {"_count": "desc"},
+                    "min_doc_count": 1,
                     "size": 1
+                }}
+            }
+        }
+    }
+
+    json.dumps(t).should.equal(json.dumps(results))
+
+
+def test_add_agg_nested_with_order():
+    """
+    Create nested aggregations block specifying order type and direction
+    """
+    # When add a nested_path with terms agg block w/ size
+    t = Aggregations("agg_name", "field_name", "terms", order_type="_term", order_dir="asc",
+                     nested_path="nested_doc")
+
+    # The I see correct json
+    results = {
+        "nested_doc": {
+            "nested": {"path": "nested_doc"},
+            "aggregations": {
+                "agg_name": {"terms": {
+                    "field": "nested_doc.field_name",
+                    "order": {"_term": "asc"},
+                    "min_doc_count": 1,
+                    "size": 0
+                }}
+            }
+        }
+    }
+
+    json.dumps(t).should.equal(json.dumps(results))
+
+
+def test_add_agg_nested_with_min_doc_count():
+    """
+    Create nested aggregations block specifying min_doc_count
+    """
+    # When add a nested_path with terms agg block w/ size
+    t = Aggregations("agg_name", "field_name", "terms", min_doc_count=10,
+                     nested_path="nested_doc")
+
+    # The I see correct json
+    results = {
+        "nested_doc": {
+            "nested": {"path": "nested_doc"},
+            "aggregations": {
+                "agg_name": {"terms": {
+                    "field": "nested_doc.field_name",
+                    "order": {"_count": "desc"},
+                    "min_doc_count": 10,
+                    "size": 0
                 }}
             }
         }

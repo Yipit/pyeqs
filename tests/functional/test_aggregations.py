@@ -58,6 +58,154 @@ def test_search_aggregation_with_size(context):
 
 @requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
+def test_search_aggregation_with_order_one(context):
+    """
+    Search with aggregation ordered by count descending
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbar"})
+
+    # And I do an aggregated search
+    t.aggregate(aggregation=Aggregations("foo_attrs", "bar", "terms",
+                                         order_type="_count", order_dir="desc"))
+    t[0:10]
+
+    # Then I get a the expected results
+    t.aggregations().should.have.key('foo_attrs')
+
+    t.aggregations()['foo_attrs'].should.have.key("buckets").being.equal([
+        {u'key': u'baz', u'doc_count': 3},
+        {u'key': u'bazbaz', u'doc_count': 2},
+        {u'key': u'bazbar', u'doc_count': 1}])
+
+
+@scenario(prepare_data, cleanup_data)
+def test_search_aggregation_with_order_two(context):
+    """
+    Search with aggregation ordered by count ascending
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbar"})
+
+    # And I do an aggregated search
+    t.aggregate(aggregation=Aggregations("foo_attrs", "bar", "terms",
+                                         order_type="_count", order_dir="asc"))
+    t[0:10]
+
+    # Then I get a the expected results
+    t.aggregations().should.have.key('foo_attrs')
+
+    t.aggregations()['foo_attrs'].should.have.key("buckets").being.equal([
+        {u'key': u'bazbar', u'doc_count': 1},
+        {u'key': u'bazbaz', u'doc_count': 2},
+        {u'key': u'baz', u'doc_count': 3}])
+
+
+@scenario(prepare_data, cleanup_data)
+def test_search_aggregation_with_order_three(context):
+    """
+    Search with aggregation ordered by term descending
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbar"})
+
+    # And I do an aggregated search
+    t.aggregate(aggregation=Aggregations("foo_attrs", "bar", "terms",
+                                         order_type="_term", order_dir="desc"))
+    t[0:10]
+
+    # Then I get a the expected results
+    t.aggregations().should.have.key('foo_attrs')
+
+    t.aggregations()['foo_attrs'].should.have.key("buckets").being.equal([
+        {u'key': u'bazbaz', u'doc_count': 2},
+        {u'key': u'bazbar', u'doc_count': 1},
+        {u'key': u'baz', u'doc_count': 3}])
+
+
+@scenario(prepare_data, cleanup_data)
+def test_search_aggregation_with_order_four(context):
+    """
+    Search with aggregation ordered by term ascending
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbar"})
+
+    # And I do an aggregated search
+    t.aggregate(aggregation=Aggregations("foo_attrs", "bar", "terms",
+                                         order_type="_term", order_dir="asc"))
+    t[0:10]
+
+    # Then I get a the expected results
+    t.aggregations().should.have.key('foo_attrs')
+
+    t.aggregations()['foo_attrs'].should.have.key("buckets").being.equal([
+        {u'key': u'baz', u'doc_count': 3},
+        {u'key': u'bazbar', u'doc_count': 1},
+        {u'key': u'bazbaz', u'doc_count': 2}])
+
+
+@scenario(prepare_data, cleanup_data)
+def test_search_aggregation_with_min_doc_count(context):
+    """
+    Search with terms aggregation w/ a min_doc_count
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbar"})
+
+    # And I do an aggregated search
+    t.aggregate(aggregation=Aggregations("foo_attrs", "bar", "terms", min_doc_count=2))
+    t[0:10]
+
+    # Then I get a the expected results
+    t.aggregations().should.have.key('foo_attrs')
+
+    t.aggregations()['foo_attrs'].should.have.key("buckets").being.equal([
+        {u'key': u'baz', u'doc_count': 3},
+        {u'key': u'bazbaz', u'doc_count': 2}])
+
+
+@scenario(prepare_data, cleanup_data)
 def test_search_multi_aggregations(context):
     """
     Search with multiple aggregations
