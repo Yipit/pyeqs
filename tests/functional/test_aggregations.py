@@ -5,9 +5,10 @@ from sure import scenario
 
 from pyeqs import QuerySet, Filter
 from pyeqs.dsl import Aggregations, Range
-from tests.helpers import prepare_data, cleanup_data, add_document
+from tests.helpers import prepare_data, cleanup_data, add_document, requires_es_gte
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_aggregation(context):
     """
@@ -30,6 +31,7 @@ def test_search_aggregation(context):
         {u'key': u'baz', u'doc_count': 1}, {u'key': u'bazbaz', u'doc_count': 1}])
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_aggregation_with_size(context):
     """
@@ -54,6 +56,7 @@ def test_search_aggregation_with_size(context):
         {u'key': u'baz', u'doc_count': 2}])
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_multi_aggregations(context):
     """
@@ -79,6 +82,7 @@ def test_search_multi_aggregations(context):
         {u'key': u'bazbaz', u'doc_count': 2}, {u'key': u'baz', u'doc_count': 1}])
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_nested_aggregations(context):
     """
@@ -99,6 +103,7 @@ def test_search_nested_aggregations(context):
     t.aggregations().should.have.key("child").being.equal({'best_bazbaz': {'value': 10.0}, 'doc_count': 2})
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_nested_terms_aggregations_with_size(context):
     """
@@ -127,6 +132,7 @@ def test_search_nested_terms_aggregations_with_size(context):
     })
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_filtered_aggregations(context):
     """
@@ -158,6 +164,7 @@ def test_search_filtered_aggregations(context):
     t.aggregations()["high_bar"]["doc_count"].should.equal(4)
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_global_aggregations(context):
     """
@@ -187,6 +194,7 @@ def test_search_global_aggregations(context):
         u'doc_count': 3})
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_range_aggregations(context):
     """
@@ -229,6 +237,7 @@ def test_search_range_aggregations(context):
         {u'from': 3.0, u'doc_count': 0}])
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_histogram_aggregations(context):
     """
