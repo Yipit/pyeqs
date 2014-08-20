@@ -2,6 +2,10 @@
 from __future__ import unicode_literals
 
 import json
+import os
+
+from distutils.version import StrictVersion
+from nose.plugins.skip import SkipTest
 
 from elasticsearch import (
     Elasticsearch
@@ -83,3 +87,26 @@ prepare_data = [
 cleanup_data = [
     clean_elasticsearch
 ]
+
+
+def version_tuple(v):
+    return tuple(map(int, (v.split("."))))
+
+
+class requires_es_gte(object):
+    """
+    Decorator for requiring Elasticsearch version
+    greater than or equal to 'version'
+    """
+    def __init__(self, version):
+        self.version = version
+
+    def __call__(self, test):
+        es_version_string = os.environ.get("ES_VERSION", None)
+        if es_version_string is None:  # Skip check if we don't know our version
+            return test
+        es_version = StrictVersion(es_version_string)
+        required = StrictVersion(self.version)
+        if es_version >= required:
+            return test
+        raise SkipTest
