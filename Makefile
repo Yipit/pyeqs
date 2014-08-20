@@ -24,7 +24,7 @@ run_test:
 		echo "Running \033[0;32m$(suite)\033[0m test suite"; \
 		make prepare && \
 			nosetests --stop --with-coverage --cover-package=$(PACKAGE) \
-				--cover-branches --cover-min-percentage=100 --cover-erase --verbosity=2 -s tests/$(suite) ; \
+				--cover-branches --cover-erase --verbosity=2 -s tests/$(suite) ; \
 	fi
 
 install_deps:
