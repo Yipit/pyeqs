@@ -504,6 +504,17 @@ def test_queryset_count():
     t.count().should.equal(None)
 
 
+def test_queryset_max_score():
+    """
+    Get QuerySet Max Score
+    """
+    # When I create a query block
+    t = QuerySet("foobar")
+
+    # Then I get an appropriate max score
+    t.max_score().should.equal(None)
+
+
 def test_queryset_string():
     """
     Create QuerySet with String query
@@ -641,6 +652,7 @@ def test_queryset_getitem_with_wrapper():
     results = t[0:1]
     len(results).should.equal(1)
     t.count().should.equal(1)
+    t.max_score().should.equal(10)
     int(results[0]).should.equal(1)
 
 

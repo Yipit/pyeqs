@@ -20,6 +20,7 @@ class QuerySet(object):
         self._wrappers = []
         self._post_query_actions = []
         self._count = None
+        self._max_score = None
         self._conn = None
         self._finalized_query = None
         self._aggregations = None
@@ -69,6 +70,9 @@ class QuerySet(object):
 
     def count(self):
         return self._count
+
+    def max_score(self):
+        return self._max_score
 
     def aggregations(self):
         return self._aggregations
@@ -138,10 +142,14 @@ class QuerySet(object):
         pagination_kwargs = self._get_pagination_kwargs(start, end)
         raw_results = conn.search(index=self._index, body=self._query, **pagination_kwargs)
         self._count = self._get_result_count(raw_results)
+        self._max_score = self._get_max_score(raw_results)
         return raw_results
 
     def _get_result_count(self, results):
         return int(results["hits"]["total"])
+
+    def _get_max_score(self, results):
+        return results.get("hits", {}).get("max_score")
 
     def _get_pagination_kwargs(self, start, end):
         size = end - start

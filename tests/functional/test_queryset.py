@@ -258,6 +258,7 @@ def test_search_with_iterator(context):
 
     len(t).should.equal(5)
     t.count().should.equal(5)
+    t.max_score().should_not.be(None)
 
 
 @scenario(prepare_data, cleanup_data)
