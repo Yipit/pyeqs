@@ -1,3 +1,7 @@
+### `0.12.0`
+
+* Add `max_score()` method to queryset
+
 ### `0.11.0`
 
 * Add `size` parameter to `Terms()` aggregations
