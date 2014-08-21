@@ -24,6 +24,7 @@ class QuerySet(object):
         self._conn = None
         self._finalized_query = None
         self._aggregations = None
+        self._suggests = None
         # Caching
         self._cache = None
         self._retrieved = 0
@@ -81,6 +82,13 @@ class QuerySet(object):
         self._q.aggregate(aggregation)
         return self
 
+    def suggestions(self):
+        return self._suggests
+
+    def suggest(self, suggestion):
+        self._q.suggest(suggestion)
+        return self
+
     def __next__(self):
         return self.next()  # pragma: no cover
 
@@ -135,6 +143,8 @@ class QuerySet(object):
             results = wrapper(results)
         if raw_results.get('aggregations'):
             self._aggregations = raw_results.get('aggregations')
+        if raw_results.get('suggest'):
+            self._suggests = raw_results.get('suggest')
         return results
 
     def _search(self, start, end):

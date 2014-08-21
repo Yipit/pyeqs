@@ -10,6 +10,7 @@ from .query_string import QueryString  # noqa
 from .range import Range  # noqa
 from .script_score import ScriptScore  # noqa
 from .sort import Sort  # noqa
+from .suggesters import TermSuggesters  # noqa
 from .term import Term  # noqa
 from .terms import Terms  # noqa
 from .type import Type  # noqa
@@ -26,5 +27,6 @@ __all__ = (
     'Sort',
     'Term',
     'Terms',
+    'TermSuggesters',
     'Type',
 )

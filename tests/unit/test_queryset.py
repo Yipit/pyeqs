@@ -5,7 +5,7 @@ import httpretty
 import json
 
 from pyeqs import QuerySet, Filter
-from pyeqs.dsl import Aggregations, QueryString, ScriptScore, Sort, Term
+from pyeqs.dsl import Aggregations, QueryString, ScriptScore, Sort, Term, TermSuggesters
 from tests.helpers import homogeneous
 
 
@@ -574,6 +574,122 @@ def test_create_queryset_with_aggregation():
     homogeneous(t._query, results)
 
 
+def test_create_queryset_with_term_suggester():
+    """
+    Create QuerySet with a TermSuggester
+    """
+    # When I create a query block
+    t = QuerySet("foobar")
+
+    # And I suggest
+    s = TermSuggesters("sugg_name", "text_content", "field_name")
+    t.suggest(s)
+
+    results = {
+        "query": {
+            "match_all": {}
+        },
+        "suggest": {
+            "sugg_name": {
+                "text": "text_content",
+                "term": {
+                    "field": "field_name", "max_edits": 2, "max_term_freq": 0.01,
+                    "min_doc_freq": 0, "min_word_length": 4, "prefix_length": 1,
+                    "sort": "score", "suggest_mode": "missing"
+                }
+            }
+        }
+    }
+
+    homogeneous(t._query, results)
+
+    # And I can do it as many times as I want
+    s1 = TermSuggesters("other_sugg_name", "other_text_content", "other_field_name", size=7)
+    t.suggest(s1)
+
+    results = {
+        "query": {
+            "match_all": {}
+        },
+        "suggest": {
+            "sugg_name": {
+                "text": "text_content",
+                "term": {
+                    "field": "field_name", "max_edits": 2, "max_term_freq": 0.01,
+                    "min_doc_freq": 0, "min_word_length": 4, "prefix_length": 1,
+                    "sort": "score", "suggest_mode": "missing"
+                }
+            },
+            "other_sugg_name": {
+                "text": "other_text_content",
+                "term": {
+                    "field": "other_field_name", "max_edits": 2, "size": 7,
+                    "max_term_freq": 0.01, "min_doc_freq": 0, "min_word_length": 4,
+                    "prefix_length": 1, "sort": "score", "suggest_mode": "missing"}
+            }
+        }
+    }
+    homogeneous(t._query, results)
+
+
+def test_create_queryset_with_global_term_suggester():
+    """
+    Create QuerySet with a global TermSuggester
+    """
+    # When I create a query block
+    t = QuerySet("foobar")
+
+    # And I suggest
+    s = TermSuggesters("sugg_name", "text_content", "field_name", global_=True)
+    t.suggest(s)
+
+    results = {
+        "query": {
+            "match_all": {}
+        },
+        "suggest": {
+            "text": "text_content",
+            "sugg_name": {
+                "term": {
+                    "field": "field_name", "max_edits": 2, "max_term_freq": 0.01,
+                    "min_doc_freq": 0, "min_word_length": 4, "prefix_length": 1,
+                    "sort": "score", "suggest_mode": "missing"
+                }
+            }
+        }
+    }
+
+    homogeneous(t._query, results)
+
+    # And I can add nested ones
+    s1 = TermSuggesters("other_sugg_name", "other_text_content", "other_field_name", size=7)
+    t.suggest(s1)
+
+    results = {
+        "query": {
+            "match_all": {}
+        },
+        "suggest": {
+            "text": "text_content",
+            "sugg_name": {
+                "term": {
+                    "field": "field_name", "max_edits": 2, "max_term_freq": 0.01,
+                    "min_doc_freq": 0, "min_word_length": 4, "prefix_length": 1,
+                    "sort": "score", "suggest_mode": "missing"
+                }
+            },
+            "other_sugg_name": {
+                "text": "other_text_content",
+                "term": {
+                    "field": "other_field_name", "max_edits": 2, "size": 7,
+                    "max_term_freq": 0.01, "min_doc_freq": 0, "min_word_length": 4,
+                    "prefix_length": 1, "sort": "score", "suggest_mode": "missing"}
+            }
+        }
+    }
+    homogeneous(t._query, results)
+
+
 @httpretty.activate
 def test_queryset_getitem():
     """
@@ -963,3 +1079,50 @@ def test_queryset_aggregations():
 
     t[0:1]
     t.aggregations().should.have.key("agg_name").being.equal({"metric": {"field": "field_name"}})
+
+
+@httpretty.activate
+def test_queryset_suggestions():
+    """
+    Fetch suggest data from QuerySet with #suggestions
+    """
+    # When I create a query block
+    t = QuerySet("localhost", index="bar")
+
+    # And I suggest something
+    s = TermSuggesters("sugg_name", "text_content", "field_name")
+    t.suggest(s)
+
+    # And I have records
+    response = {
+        "took": 12,
+        "hits": {
+            "total": 1,
+            "max_score": 10,
+            "hits": [
+                {"_index": "bar",
+                 "_type": "baz",
+                 "_id": "1",
+                 "_score": 10,
+                 "_source": {
+                     "foo": "bar"
+                 },
+                 "sort": [
+                     1395687078000
+                 ]}
+            ]
+        },
+        "suggest": {
+            "sugg_name": [
+                {"text": "text_content", "offset": 0, "length": 13, "options": []}
+            ]
+        }
+    }
+    httpretty.register_uri(httpretty.GET, "http://localhost:9200/bar/_search",
+                           body=json.dumps(response),
+                           content_type="application/json")
+
+    t[0:1]
+    t.suggestions().should.have.key("sugg_name").being.equal([
+        {"text": "text_content", "offset": 0, "length": 13, "options": []}
+    ])

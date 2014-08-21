@@ -25,6 +25,8 @@ class QueryBuilder(object):
         self._fields = []
         self._aggregated = False
         self._aggregation_dsl = None
+        self._suggested = False
+        self._suggest_dsl = None
         self._build_query()
 
     def _build_query(self):
@@ -102,6 +104,17 @@ class QueryBuilder(object):
             self._aggregation_dsl = self._build_aggregation_query(aggregation)
         return self
 
+    def _build_suggest_query(self, suggestion):
+        self._suggested = True
+        return suggestion
+
+    def suggest(self, suggestion):
+        if self._suggested:
+            self._suggest_dsl.update(suggestion)
+        else:
+            self._suggest_dsl = self._build_suggest_query(suggestion)
+        return self
+
     def fields(self, fields):
         self._fields.append(fields)
 
@@ -139,5 +152,8 @@ class QueryBuilder(object):
 
         if self._aggregated:
             query["aggregations"] = self._aggregation_dsl
+
+        if self._suggested:
+            query["suggest"] = self._suggest_dsl
 
         return query
