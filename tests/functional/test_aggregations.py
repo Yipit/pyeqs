@@ -87,6 +87,7 @@ def test_search_terms_aggregation_with_order_one(context):
         {u'key': u'bazbar', u'doc_count': 1}])
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_terms_aggregation_with_order_two(context):
     """
@@ -117,6 +118,7 @@ def test_search_terms_aggregation_with_order_two(context):
         {u'key': u'baz', u'doc_count': 3}])
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_terms_aggregation_with_order_three(context):
     """
@@ -147,6 +149,7 @@ def test_search_terms_aggregation_with_order_three(context):
         {u'key': u'baz', u'doc_count': 3}])
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_terms_aggregation_with_order_four(context):
     """
@@ -177,6 +180,7 @@ def test_search_terms_aggregation_with_order_four(context):
         {u'key': u'bazbaz', u'doc_count': 2}])
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_terms_aggregation_with_min_doc_count(context):
     """
@@ -205,6 +209,7 @@ def test_search_terms_aggregation_with_min_doc_count(context):
         {u'key': u'bazbaz', u'doc_count': 2}])
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_multi_aggregations(context):
     """
@@ -417,6 +422,7 @@ def test_search_histogram_aggregations(context):
         {u'key': 0, u'doc_count': 2}])
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_histogram_aggregations_with_order(context):
     """
@@ -449,6 +455,7 @@ def test_search_histogram_aggregations_with_order(context):
         {u'key': 4, u'doc_count': 3}])
 
 
+@requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
 def test_search_histogram_aggregations_with_min_doc_count(context):
     """
