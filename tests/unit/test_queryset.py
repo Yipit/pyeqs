@@ -567,6 +567,8 @@ def test_create_queryset_with_aggregation():
             "agg_name": {"metric": {"field": "field_name"}},
             "other_agg_name": {"terms": {
                 "field": "other_field_name",
+                "order": {"_count": "desc"},
+                "min_doc_count": 1,
                 "size": 1
             }}
         }

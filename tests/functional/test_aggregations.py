@@ -33,9 +33,9 @@ def test_search_aggregation(context):
 
 @requires_es_gte('1.1.0')
 @scenario(prepare_data, cleanup_data)
-def test_search_aggregation_with_size(context):
+def test_search_terms_aggregation_with_size(context):
     """
-    Search with aggregation w/ specified size
+    Search with terms aggregation w/ specified size
     """
     # When create a queryset
     t = QuerySet("localhost", index="foo")
@@ -54,6 +54,159 @@ def test_search_aggregation_with_size(context):
     t.aggregations().should.have.key('foo_attrs')
     t.aggregations()['foo_attrs'].should.have.key("buckets").being.equal([
         {u'key': u'baz', u'doc_count': 2}])
+
+
+@requires_es_gte('1.1.0')
+@scenario(prepare_data, cleanup_data)
+def test_search_terms_aggregation_with_order_one(context):
+    """
+    Search with terms aggregation ordered by count descending
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbar"})
+
+    # And I do an aggregated search
+    t.aggregate(aggregation=Aggregations("foo_attrs", "bar", "terms",
+                                         order_type="_count", order_dir="desc"))
+    t[0:10]
+
+    # Then I get a the expected results
+    t.aggregations().should.have.key('foo_attrs')
+
+    t.aggregations()['foo_attrs'].should.have.key("buckets").being.equal([
+        {u'key': u'baz', u'doc_count': 3},
+        {u'key': u'bazbaz', u'doc_count': 2},
+        {u'key': u'bazbar', u'doc_count': 1}])
+
+
+@requires_es_gte('1.1.0')
+@scenario(prepare_data, cleanup_data)
+def test_search_terms_aggregation_with_order_two(context):
+    """
+    Search with terms aggregation ordered by count ascending
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbar"})
+
+    # And I do an aggregated search
+    t.aggregate(aggregation=Aggregations("foo_attrs", "bar", "terms",
+                                         order_type="_count", order_dir="asc"))
+    t[0:10]
+
+    # Then I get a the expected results
+    t.aggregations().should.have.key('foo_attrs')
+
+    t.aggregations()['foo_attrs'].should.have.key("buckets").being.equal([
+        {u'key': u'bazbar', u'doc_count': 1},
+        {u'key': u'bazbaz', u'doc_count': 2},
+        {u'key': u'baz', u'doc_count': 3}])
+
+
+@requires_es_gte('1.1.0')
+@scenario(prepare_data, cleanup_data)
+def test_search_terms_aggregation_with_order_three(context):
+    """
+    Search with terms aggregation ordered by term descending
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbar"})
+
+    # And I do an aggregated search
+    t.aggregate(aggregation=Aggregations("foo_attrs", "bar", "terms",
+                                         order_type="_term", order_dir="desc"))
+    t[0:10]
+
+    # Then I get a the expected results
+    t.aggregations().should.have.key('foo_attrs')
+
+    t.aggregations()['foo_attrs'].should.have.key("buckets").being.equal([
+        {u'key': u'bazbaz', u'doc_count': 2},
+        {u'key': u'bazbar', u'doc_count': 1},
+        {u'key': u'baz', u'doc_count': 3}])
+
+
+@requires_es_gte('1.1.0')
+@scenario(prepare_data, cleanup_data)
+def test_search_terms_aggregation_with_order_four(context):
+    """
+    Search with terms aggregation ordered by term ascending
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbar"})
+
+    # And I do an aggregated search
+    t.aggregate(aggregation=Aggregations("foo_attrs", "bar", "terms",
+                                         order_type="_term", order_dir="asc"))
+    t[0:10]
+
+    # Then I get a the expected results
+    t.aggregations().should.have.key('foo_attrs')
+
+    t.aggregations()['foo_attrs'].should.have.key("buckets").being.equal([
+        {u'key': u'baz', u'doc_count': 3},
+        {u'key': u'bazbar', u'doc_count': 1},
+        {u'key': u'bazbaz', u'doc_count': 2}])
+
+
+@requires_es_gte('1.1.0')
+@scenario(prepare_data, cleanup_data)
+def test_search_terms_aggregation_with_min_doc_count(context):
+    """
+    Search with terms aggregation w/ a min_doc_count
+    """
+    # When create a queryset
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "baz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbaz"})
+    add_document("foo", {"bar": "bazbar"})
+
+    # And I do an aggregated search
+    t.aggregate(aggregation=Aggregations("foo_attrs", "bar", "terms", min_doc_count=2))
+    t[0:10]
+
+    # Then I get a the expected results
+    t.aggregations().should.have.key('foo_attrs')
+
+    t.aggregations()['foo_attrs'].should.have.key("buckets").being.equal([
+        {u'key': u'baz', u'doc_count': 3},
+        {u'key': u'bazbaz', u'doc_count': 2}])
 
 
 @requires_es_gte('1.1.0')
@@ -263,7 +416,72 @@ def test_search_histogram_aggregations(context):
     # I get the expected results
     t.aggregations().should.have.key("bar_buckets")
     t.aggregations()["bar_buckets"].should.have.key("buckets").being.equal([
+        {u'key': 8, u'doc_count': 1},
+        {u'key': 4, u'doc_count': 3},
+        {u'key': 2, u'doc_count': 2},
+        {u'key': 0, u'doc_count': 2}])
+
+
+@requires_es_gte('1.1.0')
+@scenario(prepare_data, cleanup_data)
+def test_search_histogram_aggregations_with_order(context):
+    """
+    Search with aggregations that have histograms in order
+    """
+    # When create a query block
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": 0, "foo": "baz"})
+    add_document("foo", {"bar": 0, "foo": "baz"})
+    add_document("foo", {"bar": 2})
+    add_document("foo", {"bar": 3, "foo": "bazbaz"})
+    add_document("foo", {"bar": 5, "foo": "foobar"})
+    add_document("foo", {"bar": 5})
+    add_document("foo", {"bar": 5, "foo": "foobaz"})
+    add_document("foo", {"bar": 9})
+
+    # When I do a histogram aggregation
+    t.aggregate(aggregation=Aggregations("bar_buckets", "bar", "metric", histogram_interval=2,
+                                         order_type="_count", order_dir="asc"))
+    t[0:10]
+
+    # I get the expected results
+    t.aggregations().should.have.key("bar_buckets")
+    t.aggregations()["bar_buckets"].should.have.key("buckets").being.equal([
+        {u'key': 8, u'doc_count': 1},
         {u'key': 0, u'doc_count': 2},
         {u'key': 2, u'doc_count': 2},
+        {u'key': 4, u'doc_count': 3}])
+
+
+@requires_es_gte('1.1.0')
+@scenario(prepare_data, cleanup_data)
+def test_search_histogram_aggregations_with_min_doc_count(context):
+    """
+    Search with aggregations that have histograms with min_doc_count
+    """
+    # When create a query block
+    t = QuerySet("localhost", index="foo")
+
+    # And there are records
+    add_document("foo", {"bar": 0, "foo": "baz"})
+    add_document("foo", {"bar": 0, "foo": "baz"})
+    add_document("foo", {"bar": 2})
+    add_document("foo", {"bar": 3, "foo": "bazbaz"})
+    add_document("foo", {"bar": 5, "foo": "foobar"})
+    add_document("foo", {"bar": 5})
+    add_document("foo", {"bar": 5, "foo": "foobaz"})
+    add_document("foo", {"bar": 9})
+
+    # When I do a histogram aggregation
+    t.aggregate(aggregation=Aggregations("bar_buckets", "bar", "metric", histogram_interval=2,
+                                         min_doc_count=2))
+    t[0:10]
+
+    # I get the expected results
+    t.aggregations().should.have.key("bar_buckets")
+    t.aggregations()["bar_buckets"].should.have.key("buckets").being.equal([
         {u'key': 4, u'doc_count': 3},
-        {u'key': 8, u'doc_count': 1}])
+        {u'key': 2, u'doc_count': 2},
+        {u'key': 0, u'doc_count': 2}])

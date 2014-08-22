@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import json
-
 from pyeqs.dsl import Aggregations
+from tests.helpers import homogeneous
 
 
 def test_add_agg():
@@ -20,7 +19,7 @@ def test_add_agg():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_with_size():
@@ -33,11 +32,60 @@ def test_add_agg_with_size():
     # Then I see correct json
     results = {
         "agg_name": {
-            "terms": {"field": "field_name", "size": 1}
+            "terms": {
+                "field": "field_name",
+                "order": {"_count": "desc"},
+                "min_doc_count": 1,
+                "size": 1
+            }
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
+
+
+def test_add_agg_with_order():
+    """
+    Create aggregations block specifying order type and direction
+    """
+    # When add a terms agg block w/ size
+    t = Aggregations("agg_name", "field_name", "terms", order_type="_term", order_dir="asc")
+
+    # Then I see correct json
+    results = {
+        "agg_name": {
+            "terms": {
+                "field": "field_name",
+                "order": {"_term": "asc"},
+                "min_doc_count": 1,
+                "size": 0
+            }
+        }
+    }
+
+    homogeneous(t, results)
+
+
+def test_add_agg_with_min_doc_count():
+    """
+    Create aggregations block specifying the min_doc_count
+    """
+    # When add a terms agg block w/ size
+    t = Aggregations("agg_name", "field_name", "terms", min_doc_count=10)
+
+    # Then I see correct json
+    results = {
+        "agg_name": {
+            "terms": {
+                "field": "field_name",
+                "order": {"_count": "desc"},
+                "min_doc_count": 10,
+                "size": 0
+            }
+        }
+    }
+
+    homogeneous(t, results)
 
 
 def test_add_agg_nested():
@@ -57,7 +105,7 @@ def test_add_agg_nested():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_nested_with_size():
@@ -75,13 +123,67 @@ def test_add_agg_nested_with_size():
             "aggregations": {
                 "agg_name": {"terms": {
                     "field": "nested_doc.field_name",
+                    "order": {"_count": "desc"},
+                    "min_doc_count": 1,
                     "size": 1
                 }}
             }
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
+
+
+def test_add_agg_nested_with_order():
+    """
+    Create nested aggregations block specifying order type and direction
+    """
+    # When add a nested_path with terms agg block w/ size
+    t = Aggregations("agg_name", "field_name", "terms", order_type="_term", order_dir="asc",
+                     nested_path="nested_doc")
+
+    # The I see correct json
+    results = {
+        "nested_doc": {
+            "nested": {"path": "nested_doc"},
+            "aggregations": {
+                "agg_name": {"terms": {
+                    "field": "nested_doc.field_name",
+                    "order": {"_term": "asc"},
+                    "min_doc_count": 1,
+                    "size": 0
+                }}
+            }
+        }
+    }
+
+    homogeneous(t, results)
+
+
+def test_add_agg_nested_with_min_doc_count():
+    """
+    Create nested aggregations block specifying min_doc_count
+    """
+    # When add a nested_path with terms agg block w/ size
+    t = Aggregations("agg_name", "field_name", "terms", min_doc_count=10,
+                     nested_path="nested_doc")
+
+    # The I see correct json
+    results = {
+        "nested_doc": {
+            "nested": {"path": "nested_doc"},
+            "aggregations": {
+                "agg_name": {"terms": {
+                    "field": "nested_doc.field_name",
+                    "order": {"_count": "desc"},
+                    "min_doc_count": 10,
+                    "size": 0
+                }}
+            }
+        }
+    }
+
+    homogeneous(t, results)
 
 
 def test_add_agg_filtered():
@@ -105,7 +207,7 @@ def test_add_agg_filtered():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_global():
@@ -125,7 +227,7 @@ def test_add_agg_global():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_range():
@@ -150,7 +252,7 @@ def test_add_agg_range():
             }}
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
     # Also works without a given range_name
     t = Aggregations("agg_name", "field_name", "metric", range_list=range_list)
@@ -169,7 +271,7 @@ def test_add_agg_range():
             }}
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_histogram():
@@ -184,9 +286,57 @@ def test_add_agg_histogram():
         "agg_name": {
             "histogram": {
                 "field": "field_name",
-                "interval": 20
+                "interval": 20,
+                "order": {"_key": "desc"},
+                "min_doc_count": 1
             }
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
+
+
+def test_add_agg_histogram_with_order():
+    """
+    Create an aggregations block w/ histogram intervals and order type/direction
+    """
+    # Whan add an agg block w/ interval
+    t = Aggregations("agg_name", "field_name", "metric", histogram_interval=20,
+                     order_type="_count", order_dir="asc")
+
+    # Then I see correct json
+    results = {
+        "agg_name": {
+            "histogram": {
+                "field": "field_name",
+                "interval": 20,
+                "order": {"_count": "asc"},
+                "min_doc_count": 1
+            }
+        }
+    }
+
+    homogeneous(t, results)
+
+
+def test_add_agg_histogram_with_min_doc_count():
+    """
+    Create an aggregations block w/ histogram intervals and min_doc_count
+    """
+    # Whan add an agg block w/ interval
+    t = Aggregations("agg_name", "field_name", "metric", histogram_interval=20,
+                     min_doc_count=10)
+
+    # Then I see correct json
+    results = {
+        "agg_name": {
+            "histogram": {
+                "field": "field_name",
+                "interval": 20,
+                "order": {"_key": "desc"},
+                "min_doc_count": 10
+            }
+        }
+    }
+
+    homogeneous(t, results)
