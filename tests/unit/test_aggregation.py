@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import json
-
 from pyeqs.dsl import Aggregations
+from tests.helpers import homogeneous
 
 
 def test_add_agg():
@@ -20,7 +19,7 @@ def test_add_agg():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_with_size():
@@ -42,7 +41,7 @@ def test_add_agg_with_size():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_with_order():
@@ -64,7 +63,7 @@ def test_add_agg_with_order():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_with_min_doc_count():
@@ -86,7 +85,7 @@ def test_add_agg_with_min_doc_count():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_nested():
@@ -106,7 +105,7 @@ def test_add_agg_nested():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_nested_with_size():
@@ -132,7 +131,7 @@ def test_add_agg_nested_with_size():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_nested_with_order():
@@ -158,7 +157,7 @@ def test_add_agg_nested_with_order():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_nested_with_min_doc_count():
@@ -184,7 +183,7 @@ def test_add_agg_nested_with_min_doc_count():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_filtered():
@@ -208,7 +207,7 @@ def test_add_agg_filtered():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_global():
@@ -228,7 +227,7 @@ def test_add_agg_global():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_range():
@@ -253,7 +252,7 @@ def test_add_agg_range():
             }}
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
     # Also works without a given range_name
     t = Aggregations("agg_name", "field_name", "metric", range_list=range_list)
@@ -272,7 +271,7 @@ def test_add_agg_range():
             }}
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_histogram():
@@ -294,7 +293,7 @@ def test_add_agg_histogram():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_histogram_with_order():
@@ -317,7 +316,7 @@ def test_add_agg_histogram_with_order():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
 
 
 def test_add_agg_histogram_with_min_doc_count():
@@ -340,4 +339,4 @@ def test_add_agg_histogram_with_min_doc_count():
         }
     }
 
-    json.dumps(t).should.equal(json.dumps(results))
+    homogeneous(t, results)
