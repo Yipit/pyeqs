@@ -1,3 +1,7 @@
+## `0.13.0`
+
+* Add additional `aggregations` functionality, thanks to @zkourouma
+
 ### `0.12.0`
 
 * Add `max_score()` method to queryset
