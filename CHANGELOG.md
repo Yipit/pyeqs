@@ -1,3 +1,6 @@
+## `0.13.1`
+* Add `default_field` support for `QueryString`
+
 ## `0.13.0`
 
 * Add additional `aggregations` functionality, thanks to @zkourouma
