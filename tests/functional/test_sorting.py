@@ -138,7 +138,7 @@ def test_search_with_location_sort(context):
     # When create a query block
     t = QuerySet("localhost", index="foo")
 
-    # And there are locaiton records
+    # And there are location records
     add_document("foo", {"baz": 1, "location": {"lat": 40.0, "lon": 70.0}})
     add_document("foo", {"baz": 2, "location": {"lat": 40.0, "lon": 75.0}})
 
